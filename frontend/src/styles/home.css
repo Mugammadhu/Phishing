@@ -1,0 +1,16 @@
+
+.carousel-control-prev,
+.carousel-control-next {
+  filter: invert(1); /* This makes the default white arrows dark */
+}
+
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+  background-color: black !important; /* Ensures the icons are dark */
+  border-radius: 50%; /* Optional: makes the buttons circular */
+  padding: 10px;
+}
+.home_container{
+    margin-top: 20px;
+ 
+}

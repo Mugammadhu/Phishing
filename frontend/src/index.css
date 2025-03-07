@@ -1,0 +1,14 @@
+
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+body{
+  background: linear-gradient(45deg, #d4fc79 15%, #96e6a1 50%, #a1c4fd 90%);
+color: #333333;
+background-repeat: no-repeat;
+background-size: cover;
+width: 100vw;
+min-height: 100vh;
+}
