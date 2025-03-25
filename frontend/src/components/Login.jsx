@@ -2,13 +2,11 @@ import { useState } from "react";
 import "../styles/Login.css";
 import { Link, useNavigate } from "react-router-dom";
 
-
 const Login = () => {
   const [user, setUser] = useState({ email: "", password: "" });
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const navigate = useNavigate();
-
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -17,7 +15,7 @@ const Login = () => {
         method: "post",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(user),
-        credentials:"include"
+        credentials: "include", // ✅ Ensures cookies are handled
       });
       const data = await response.json();
 
@@ -25,13 +23,11 @@ const Login = () => {
         setSuccessMessage(data.message);
         setErrorMessage("");
         setTimeout(() => {
-          navigate('/')
-      },1000);
-  
+          navigate("/"); // ✅ Redirect to home page
+        }, 1000);
       } else if (response.status === 404) {
         setErrorMessage(data.error);
         setSuccessMessage("");
-
         setTimeout(() => {
           navigate("/signup");
         }, 3000);
@@ -43,8 +39,8 @@ const Login = () => {
       console.log(err);
     }
     setUser({ email: "", password: "" });
-    
   };
+
   const handleReset = (e) => {
     e.preventDefault();
     setUser({ email: "", password: "" });
@@ -53,7 +49,6 @@ const Login = () => {
   return (
     <div className="login">
       <h1>Login Page</h1>
-
       <form>
         {successMessage && <p style={{ color: "green" }}>{successMessage}</p>}
         {errorMessage && <p style={{ color: "red" }}>{errorMessage}</p>}
@@ -64,9 +59,7 @@ const Login = () => {
             name="email"
             id="email"
             value={user.email}
-            onChange={(e) => {
-              setUser({ ...user, email: e.target.value });
-            }}
+            onChange={(e) => setUser({ ...user, email: e.target.value })}
             required
           />
         </label>
@@ -77,25 +70,13 @@ const Login = () => {
             name="password"
             id="password"
             value={user.password}
-            onChange={(e) => {
-              setUser({ ...user, password: e.target.value });
-            }}
+            onChange={(e) => setUser({ ...user, password: e.target.value })}
             required
           />
         </label>
         <div className="btn_section">
-          <input
-            type="submit"
-            value="Submit"
-            onClick={handleSubmit}
-            id="submit_btn"
-          />
-          <input
-            type="reset"
-            value="Reset"
-            onClick={handleReset}
-            id="reset_btn"
-          />
+          <input type="submit" value="Submit" onClick={handleSubmit} id="submit_btn" />
+          <input type="reset" value="Reset" onClick={handleReset} id="reset_btn" />
         </div>
         <p>
           If you already have an account <Link to="/signup">Signup</Link>

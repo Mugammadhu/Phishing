@@ -11,27 +11,32 @@
   position: sticky;
   top: 15px;
   left: 68.2785px;
-}
-.navbar h2{
-    color: gold;
-    padding-left:5px;
+  z-index: 1;
 }
 
-.navbar button{
-    background-color: rgb(84, 84, 248);
-    padding: 10px 30px;
-    border: none;
-    border-radius: 5px;
-    color: #fff;
-    transition: color 0.3s ease, background 0.3s ease;
-    display: flex;
-    justify-content: space-evenly;
+.navbar h2 {
+  color: gold;
+  padding-left: 5px;
 }
-.navbar button:hover{
+
+/* Navbar Button */
+.navbar button {
+  background-color: rgb(84, 84, 248);
+  padding: 10px 30px;
+  border: none;
+  border-radius: 5px;
+  color: #fff;
+  transition: color 0.3s ease, background 0.3s ease;
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center; /* Center the spinner and text vertically */
+}
+
+.navbar button:hover {
   background-color: gold;
   color: #fff;
-
 }
+
 
 /* Navbar List */
 .navbar ul {
@@ -46,6 +51,7 @@
 /* Navbar Links */
 .navbar ul li {
   display: inline-block;
+  margin-left: 60px;
 }
 
 .navbar ul li a {
@@ -63,37 +69,42 @@
   border-radius: 5px;
 }
 
+/* Active Link */
 .active {
-    font-weight: bold;
-    color: rgb(84, 84, 248) !important;
-    border-bottom: 2px solid rgb(84, 84, 248);
-  }
-  /* spinner */
-  .spinner {
-    width: 17px;
-    height: 17px;
-    border: 2px solid red;
-    border-top: 2px solid transparent;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-    margin-right: 5px;
-  }
+  font-weight: bold;
+  color: rgb(84, 84, 248) !important;
+  border-bottom: 2px solid rgb(84, 84, 248);
+}
+
+#navbarNav{
+  margin-left: 220px;
   
-  @keyframes spin {
-    0% {
-      transform: rotate(0deg);
-    }
-    100% {
-      transform: rotate(360deg);
-    }
+}
+/* Spinner */
+.spinner {
+  width: 17px;
+  height: 17px;
+  border: 2px solid red;
+  border-top: 2px solid transparent;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-right: 5px;
+}
+
+/* Keyframes for spinner animation */
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
   }
-  
+  100% {
+    transform: rotate(360deg);
+  }
+}
 
 /* Responsive Design */
 @media (max-width: 320px) {
   .navbar {
     flex-direction: column;
-    
   }
 
   .navbar ul {
@@ -101,7 +112,8 @@
     align-items: center;
     gap: 20px;
   }
-  .navbar button{
+
+  .navbar button {
     margin-top: 10px;
   }
 }

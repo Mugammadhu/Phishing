@@ -1,0 +1,40 @@
+.faq-container {
+    background: linear-gradient(135deg, #6a11cb, #2575fc);
+    border-radius: 10px;
+    padding: 50px 20px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    
+  }
+  .container{
+    max-width: 90vw;
+    position: relative;
+    left: 10px;
+  }
+  
+  /* Custom Styling for Accordion */
+  .accordion-item {
+    background: rgba(255, 255, 255, 0.1) !important;
+    border: none;
+    color: white;
+  }
+  
+  .accordion-button {
+    background: rgba(255, 255, 255, 0.2) !important;
+    color: white;
+    font-weight: bold;
+  }
+  
+  .accordion-button:focus {
+    box-shadow: none;
+  }
+  
+  .accordion-button:not(.collapsed) {
+    background: rgba(255, 255, 255, 0.3) !important;
+    color: white;
+  }
+  
+  .accordion-body {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+  }
+  

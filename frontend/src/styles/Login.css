@@ -38,12 +38,13 @@ label input {
   border-radius: 5px;
   outline: none;
   border: 1.5px solid #000;
+  font-size: 13px;
 }
 #name {
-  margin-left: 25px;
+  margin-left: 34px;
 }
 #email {
-  margin-left: 35px;
+  margin-left: 40px;
 }
 #password {
   margin-left: 5px;
@@ -79,4 +80,41 @@ label input {
 form a {
   color: blue;
   text-decoration: underline;
+}
+.otp_section {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 10px;
+  display: flex;
+}
+.otp_section label {
+  margin-right: 3px;
+}
+
+.otp_section input {
+  width: 180px;
+  height: 30px;
+  border-radius: 5px;
+  outline: none;
+  border: 1.5px solid #000;
+  font-size: 14px;
+  margin-left: 4px;
+}
+.verify_btn {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 7px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  margin-top: 10px;
+}
+.verify_btn:hover {
+  background-color: #0056b3;
+}
+#submit_btn:disabled {
+  background-color: gray;
+  cursor: not-allowed;
 }
