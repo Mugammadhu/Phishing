@@ -1,0 +1,21 @@
+# Python bytecode and cache
+__pycache__/
+*.pyc
+
+# Local training data and scripts (not needed in production)
+phishing.csv
+train_model.py
+
+# Environment and IDE files
+.env
+.venv/
+*.env
+.vscode/
+.idea/
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Optional: Exclude large model file if you upload it manually
+# model.pkl  # Uncomment if you upload model.pkl separately
