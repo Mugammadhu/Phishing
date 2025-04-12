@@ -40,14 +40,21 @@ label input {
   border: 1.5px solid #000;
   font-size: 13px;
 }
+.form-control::placeholder {
+  color: #6c757d; /* Bootstrap's default muted color */
+  font-style: italic;
+  font-size: 14px;
+}
+
 #name {
   margin-left: 34px;
 }
 #email {
-  margin-left: 40px;
+  margin-left: 10px;
+  width:300px ;
 }
 #password {
-  margin-left: 5px;
+  margin-left: 10px;
 }
 .btn_section {
   display: flex;

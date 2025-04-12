@@ -52,14 +52,14 @@ const Tools = () => {
               <h4 className="card-title">Phishing Checker</h4>
               <p className="card-text">Detect if a website is a phishing site.</p>
             </div>
-            <div
+            {/* <div
               className="tool-card darkweb"
-              onClick={(e) => handleClick(e, "/darkweb-monitor")}
+              onClick={(e) => handleClick(e, "/dark-web")}
             >
               <i className="bi bi-eye-slash-fill tool-icon"></i>
               <h4 className="card-title">Dark Web Monitor</h4>
               <p className="card-text">Check if your data is on the dark web.</p>
-            </div>
+            </div> */}
           </div>
         </div>
         <div className="faq"><Faq/></div>

@@ -8,6 +8,8 @@ const dotenv = require("dotenv");
 const userModel = require("./models/userModel.js");
 const contactModel = require("./models/contactModel.js");
 const urlRoutes = require("./routes/urlRoutes.js");
+const userRoute = require("./routes/userRoute.js");
+const ContactRoute = require("./routes/ContactRoute.js");
 const nodemailer = require("nodemailer");
 
 dotenv.config();
@@ -155,6 +157,8 @@ app.get("/auth", (req, res) => {
 });
 
 app.use("/api", urlRoutes);
+app.use("/users", userRoute);
+app.use("/contacts",ContactRoute)
 
 // Contact Us Route
 app.post("/send", async (req, res) => {
@@ -201,18 +205,18 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-const sendOtpEmail = async (email, otp) => {
+const sendOtpEmail = async (email,name, otp) => {
   const mailOptions = {
     from: `Support <${process.env.EMAIL}>`,
     to: email,
-    subject: "Your DarkShield OTP Code",
+    subject: "Your Secure One-Time Password (OTP)",
     html: `<div style="font-family:Arial,sans-serif;padding:20px;">
-            <h2 style="color:#333;">Your DarkShield OTP Code</h2>
-            <p>Your One-Time Password (OTP) is: <strong style="font-size:18px;">${otp}</strong></p>
-            <p>It is valid for 5 minutes.</p>
-            <p>Do not share this code with anyone.</p>
+            <h2 style="color:#333;">Dear ${name}</h2>
+            <p>Your One-Time Password (OTP) for secure access is: <strong style="font-size:18px;">${otp}</strong></p>
+            <p>This code is valid for the next 5 minutes.Please enter it on the verification page to proceed.</p>
+            <p>if you didn't request this OTP,please ignore this email.</p>
             <br>
-            <p>Best Regards,<br>Security Team</p>
+            <p>Regards,<br><b>DarkShield Security Team</b></p>
           </div>`,
   };
   await transporter.sendMail(mailOptions);
@@ -220,14 +224,15 @@ const sendOtpEmail = async (email, otp) => {
 
 // Send OTP API
 app.post("/send-otp", async (req, res) => {
-  const { email } = req.body;
+  const { email,name } = req.body;
   if (!email) return res.status(400).json({ error: "Email is required" });
+  if (!name) return res.status(400).json({ error: "Name is required" });
 
   const otp = Math.floor(100000 + Math.random() * 900000);
   otpStore[email] = { otp, expiresAt: Date.now() + 300000 };
 
   try {
-    await sendOtpEmail(email, otp);
+    await sendOtpEmail(email,name, otp);
     res.json({
       message: "OTP sent successfully! Check your inbox/spam folder.",
     });

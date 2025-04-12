@@ -11,8 +11,11 @@ import Contact from "./components/Contact";
 import Tools from "./components/Tools";
 import Phishing from "./components/Phishing";
 import { motion } from "framer-motion";
-import './App.css';
-import Admin from './components/Admin';
+import "./App.css";
+import Admin from "./components/Admin";
+import Users from "./components/Users";
+import ContactInfo from "./components/ContactInfo";
+import DarkWeb from "./components/Darkweb";
 
 const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(null);
@@ -28,18 +31,16 @@ const App = () => {
         });
         if (response.data.authenticated) {
           setIsAuthenticated(true);
-        }
-         else {
+        } else {
           setIsAuthenticated(false);
           // 🛠️ **Fix:** Don't redirect if the user is already on the signup page
           if (location.pathname !== "/signup") {
             navigate("/login");
           }
         }
-        if(response.data.isAdmin){
+        if (response.data.isAdmin) {
           setIsAdmin(true);
-        }
-        else{
+        } else {
           setIsAdmin(false);
         }
       } catch (error) {
@@ -118,12 +119,31 @@ const App = () => {
       <Routes>
         {/* Protected Routes */}
         <Route path="/" element={isAuthenticated ? <Home /> : <Login />} />
-        <Route path="/tools" element={isAuthenticated ? <Tools /> : <Login />} />
-        <Route path="/contact" element={isAuthenticated ? <Contact /> : <Login />} />
-        <Route path="/about" element={isAuthenticated ? <About /> : <Login />} />
-        <Route path="/phishing-checker" element={isAuthenticated ? <Phishing /> : <Login />} />
-        <Route path="/admin" element={isAdmin ? <Admin/> : <Notfound/>} />
+        <Route
+          path="/tools"
+          element={isAuthenticated ? <Tools /> : <Login />}
+        />
+        <Route
+          path="/contact"
+          element={isAuthenticated ? <Contact /> : <Login />}
+        />
+        <Route
+          path="/about"
+          element={isAuthenticated ? <About /> : <Login />}
+        />
+        <Route
+          path="/phishing-checker"
+          element={isAuthenticated ? <Phishing /> : <Login />}
+        />
+        <Route
+          path="/dark-web"
+          element={isAuthenticated ? <DarkWeb /> : <Login />}
+        />
 
+        <Route path="/admin" element={isAdmin ? <Admin /> : <Notfound />}>
+          <Route index element={<Users />} />
+          <Route path="contacts" element={<ContactInfo />} />
+        </Route>
 
         {/* Authentication */}
         <Route path="/login" element={<Login />} />
