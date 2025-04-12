@@ -3,6 +3,7 @@ import numpy as np
 import pickle
 from flask_cors import CORS
 from feature import FeatureExtraction
+import os
 
 app = Flask(__name__)
 CORS(app)
@@ -10,6 +11,10 @@ CORS(app)
 # Load trained model
 with open("model.pkl", "rb") as file:
     model = pickle.load(file)
+
+@app.route("/")
+def home():
+    return "Phishing Detection API is running!"
 
 @app.route("/predict", methods=["POST"])
 def predict():
@@ -30,5 +35,5 @@ def predict():
     })
 
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 10000))
-    app.run(host="0.0.0.0", port=port)
+    port = int(os.environ.get("PORT", 5001))
+    app.run(host='0.0.0.0', port=port)
