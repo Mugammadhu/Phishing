@@ -1,9 +1,9 @@
 {
     "builds": [
-      { "src": "phishing/app.py", "use": "@vercel/python" }
+      { "src": "phishing/phishing/app.py", "use": "@vercel/python" }
     ],
     "routes": [
-      { "src": "/(.*)", "dest": "phishing/app.py" }
+      { "src": "/(.*)", "dest": "phishing/phishing/app.py" }
     ]
   }
   
