@@ -13,7 +13,7 @@ const Users = () => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await axios.get("http://localhost:3000/users");
+        const response = await axios.get(`${import.meta.env.VITE_SERVER}/users`);
         setUsers(response.data);
       } catch (error) {
         console.error("Error fetching users:", error);
@@ -36,7 +36,7 @@ const Users = () => {
 
   const handleDelete = async () => {
     try {
-      await axios.delete(`http://localhost:3000/users/${userToDelete._id}`);
+      await axios.delete(`${import.meta.env.VITE_SERVER}/users/${userToDelete._id}`);
       setUsers(users.filter(user => user._id !== userToDelete._id));
       setShowDeleteModal(false);
     } catch (error) {

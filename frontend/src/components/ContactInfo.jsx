@@ -15,7 +15,7 @@ const Contacts = () => {
   useEffect(() => {
     const fetchContacts = async () => {
       try {
-        const response = await axios.get("http://localhost:3000/contacts");
+        const response = await axios.get(`${import.meta.env.VITE_SERVER}/contacts`);
         setContacts(response.data);
       } catch (error) {
         console.error("Error fetching contacts:", error);
@@ -39,7 +39,7 @@ const Contacts = () => {
 
   const handleDelete = async () => {
     try {
-      await axios.delete(`http://localhost:3000/contacts/${contactToDelete._id}`);
+      await axios.delete(`${import.meta.env.VITE_SERVER}/contacts/${contactToDelete._id}`);
       setContacts(contacts.filter(contact => contact._id !== contactToDelete._id));
       setShowDeleteModal(false);
     } catch (error) {

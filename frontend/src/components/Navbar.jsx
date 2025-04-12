@@ -14,7 +14,7 @@ const Navbar = () => {
     useEffect(() => {
         const verifyAuth = async () => {
             try {
-                const response = await axios.get("http://localhost:3000/auth", {
+                const response = await axios.get(`${import.meta.env.VITE_SERVER}/auth`, {
                     withCredentials: true,
                 });
                 setIsAdmin(response.data?.isAdmin || false);
@@ -39,7 +39,7 @@ const Navbar = () => {
             // Start both the logout request and the timer simultaneously
             await Promise.all([
                 axios.post(
-                    "http://localhost:3000/logout", 
+                    `${import.meta.env.VITE_SERVER}/logout`, 
                     {}, 
                     { withCredentials: true }
                 ),

@@ -46,7 +46,7 @@ const Signup = () => {
       setIsLoading(true);
       try {
         const response = await axios.post(
-          "http://localhost:3000/signup",
+          `${import.meta.env.VITE_SERVER}/signup`,
           values,
           {
             withCredentials: true,
@@ -90,7 +90,7 @@ const Signup = () => {
 
     setIsLoading(true);
     try {
-      const response = await axios.post("http://localhost:3000/send-otp", {
+      const response = await axios.post(`${import.meta.env.VITE_SERVER}/send-otp`, {
         email: formik.values.email,
         name: formik.values.name,
       });
@@ -115,7 +115,7 @@ const Signup = () => {
 
     setIsLoading(true);
     try {
-      const response = await axios.post("http://localhost:3000/verify-otp", {
+      const response = await axios.post(`${import.meta.env.VITE_SERVER}/verify-otp`, {
         email: formik.values.email,
         otp,
       });
