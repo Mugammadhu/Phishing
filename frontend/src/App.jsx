@@ -21,40 +21,54 @@ const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(null);
   const [isAdmin, setIsAdmin] = useState(null);
   const navigate = useNavigate();
-  const location = useLocation(); // Get current route
+  const location = useLocation();
 
-  useEffect(() => {
-    const verifyAuth = async () => {
-      try {
-        const response = await axios.get(`${import.meta.env.VITE_SERVER}/auth`, {
-          withCredentials: true,
-        });
-        if (response.data.authenticated) {
-          setIsAuthenticated(true);
-        } else {
-          setIsAuthenticated(false);
-          // 🛠️ **Fix:** Don't redirect if the user is already on the signup page
-          if (location.pathname !== "/signup") {
-            navigate("/login");
-          }
-        }
-        if (response.data.isAdmin) {
-          setIsAdmin(true);
-        } else {
-          setIsAdmin(false);
-        }
-      } catch (error) {
-        console.error("Authentication check failed", error);
+  // Function to verify authentication
+  const verifyAuth = async () => {
+    try {
+      const response = await axios.get(`${import.meta.env.VITE_SERVER}/auth`, {
+        withCredentials: true,
+      });
+      console.log("Auth response:", response.data); // Debug log
+      if (response.data.authenticated) {
+        setIsAuthenticated(true);
+      } else {
         setIsAuthenticated(false);
-        if (location.pathname !== "/signup") {
+        if (location.pathname !== "/signup" && location.pathname !== "/login") {
           navigate("/login");
         }
       }
-    };
-    verifyAuth();
-  }, [navigate, location.pathname]); // Depend on `location.pathname` to prevent unnecessary redirects
+      if (response.data.isAdmin) {
+        setIsAdmin(true);
+      } else {
+        setIsAdmin(false);
+      }
+    } catch (error) {
+      console.error("Authentication check failed:", {
+        message: error.message,
+        response: error.response?.data,
+        status: error.response?.status,
+      });
+      setIsAuthenticated(false);
+      if (location.pathname !== "/signup" && location.pathname !== "/login") {
+        navigate("/login");
+      }
+    }
+  };
 
-  if (isAuthenticated === null)
+  useEffect(() => {
+    verifyAuth();
+  }, [navigate, location.pathname]);
+
+  // Expose verifyAuth to child components via window (temporary for debugging)
+  useEffect(() => {
+    window.verifyAuth = verifyAuth; // Allows Login/Signup to trigger auth check
+    return () => {
+      delete window.verifyAuth; // Cleanup
+    };
+  }, []);
+
+  if (isAuthenticated === null) {
     return (
       <div className="loading-screen">
         <motion.div
@@ -91,7 +105,6 @@ const App = () => {
             Ensuring your safety in the digital world...
           </motion.p>
 
-          {/* Progress Bar */}
           <motion.div
             className="progress-bar-container"
             initial={{ width: "0%" }}
@@ -112,6 +125,7 @@ const App = () => {
         </motion.div>
       </div>
     );
+  }
 
   return (
     <div>
@@ -119,18 +133,12 @@ const App = () => {
       <Routes>
         {/* Protected Routes */}
         <Route path="/" element={isAuthenticated ? <Home /> : <Login />} />
-        <Route
-          path="/tools"
-          element={isAuthenticated ? <Tools /> : <Login />}
-        />
+        <Route path="/tools" element={isAuthenticated ? <Tools /> : <Login />} />
         <Route
           path="/contact"
           element={isAuthenticated ? <Contact /> : <Login />}
         />
-        <Route
-          path="/about"
-          element={isAuthenticated ? <About /> : <Login />}
-        />
+        <Route path="/about" element={isAuthenticated ? <About /> : <Login />} />
         <Route
           path="/phishing-checker"
           element={isAuthenticated ? <Phishing /> : <Login />}

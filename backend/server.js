@@ -22,24 +22,26 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cookieParser()); // ✅ Enable cookie parsing
 const allowedOrigins = [
-  'http://localhost:5173', // Development
-  'https://phishing-url-detection-blue.vercel.app' // Production
+  "http://localhost:5173", // Development
+  "https://phishing-url-detection-blue.vercel.app", // Production
 ];
 
-app.use(cors({
-  origin: (origin, callback) => {
-    // Allow requests with no origin (like mobile apps or curl)
-    if (!origin) return callback(null, true);
-    if (allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-  credentials: true
-}));
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      // Allow requests with no origin (like mobile apps or curl)
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    credentials: true,
+  })
+);
 
-// ✅ Signup Route (Secure Cookie) - Updated version
+// ✅ Signup Route (Secure Cookie)
 app.post("/signup", async (req, res) => {
   const { name, email, password } = req.body;
   if (!name || !email || !password) {
@@ -63,7 +65,7 @@ app.post("/signup", async (req, res) => {
   res.cookie("authToken", jwtToken, {
     httpOnly: false,
     secure: process.env.NODE_ENV === "production",
-    sameSite: "Strict",
+    sameSite: "None", // Allow cross-site requests
     maxAge: 60 * 60 * 1000,
     path: "/",
   });
@@ -73,7 +75,7 @@ app.post("/signup", async (req, res) => {
     res.cookie("adminToken", adminToken, {
       httpOnly: false,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "Strict",
+      sameSite: "None", // Allow cross-site requests
       maxAge: 60 * 60 * 1000,
       path: "/",
     });
@@ -102,10 +104,10 @@ app.post("/login", async (req, res) => {
   const jwtToken = jwt.sign({ email }, secretKey, { expiresIn: "1h" });
   res.cookie("authToken", jwtToken, {
     httpOnly: false,
-    secure: process.env.NODE_ENV === "production", // 🔥 Secure only in production
-    sameSite: "Strict",
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "None", // Allow cross-site requests
     maxAge: 60 * 60 * 1000,
-    path: "/", // ✅ Ensure the path is set to "/"
+    path: "/",
   });
 
   if (email === process.env.EMAILADD && password === process.env.PASSWORD) {
@@ -113,7 +115,7 @@ app.post("/login", async (req, res) => {
     res.cookie("adminToken", adminToken, {
       httpOnly: false,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "Strict",
+      sameSite: "None", // Allow cross-site requests
       maxAge: 60 * 60 * 1000,
       path: "/",
     });
@@ -126,17 +128,17 @@ app.post("/login", async (req, res) => {
 app.post("/logout", (req, res) => {
   res.cookie("authToken", "", {
     httpOnly: false,
-    secure: false, // ❗ Change to `true` in production with HTTPS
-    sameSite: "Lax",
-    expires: new Date(0), // ✅ Forces immediate expiration
-    path: "/", // ✅ Ensure the path matches the one used when setting the cookie
+    secure: process.env.NODE_ENV === "production", // Consistent with production
+    sameSite: "None", // Match login/signup
+    expires: new Date(0), // Forces immediate expiration
+    path: "/",
   });
   res.cookie("adminToken", "", {
     httpOnly: false,
-    secure: false, // ❗ Change to `true` in production with HTTPS
-    sameSite: "Lax",
-    expires: new Date(0), // ✅ Forces immediate expiration
-    path: "/", // ✅ Ensure the path matches the one used when setting the cookie
+    secure: process.env.NODE_ENV === "production", // Consistent with production
+    sameSite: "None", // Match login/signup
+    expires: new Date(0), // Forces immediate expiration
+    path: "/",
   });
 
   res.status(200).json({ message: "Logged out successfully" });
@@ -189,15 +191,15 @@ app.post("/send", async (req, res) => {
       },
     });
     let mailOptions = {
-      from: process.env.EMAIL, // ✅ Must be your authenticated email
-      to: process.env.EMAIL, // ✅ Sends to your email
+      from: process.env.EMAIL, // Must be your authenticated email
+      to: process.env.EMAIL, // Sends to your email
       subject: "New Contact Form Submission",
       text: `You received a new message from:
 
     Name: ${name}
     Email: ${email}
     Message: ${message}`,
-      replyTo: email, // ✅ When you hit "Reply," it replies to the user
+      replyTo: email, // When you hit "Reply," it replies to the user
     };
 
     await transporter.sendMail(mailOptions);
@@ -209,7 +211,7 @@ app.post("/send", async (req, res) => {
   }
 });
 
-//send and verify otp
+// Send and verify OTP
 let otpStore = {};
 const transporter = nodemailer.createTransport({
   host: "smtp.gmail.com",
