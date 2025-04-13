@@ -21,7 +21,14 @@ connectDatabase();
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cookieParser()); // ✅ Enable cookie parsing
-app.use(cors({ origin: process.env.CORS_URL, credentials: true })); // ✅ Allow credentials
+app.use(
+  cors({
+    origin: "https://phishing-url-detection-blue.vercel.app", // Your Vercel domain
+    credentials: true,
+  })
+);
+
+app.use(express.json());
 
 // ✅ Signup Route (Secure Cookie) - Updated version
 app.post("/signup", async (req, res) => {
