@@ -10,7 +10,7 @@ router.post("/check-url", async (req, res) => {
 
   try {
     // Call ML API
-    const response = await axios.post(`${process.env.PHISHING_URL}/predict`, { url });
+    const response = await axios.post(`https://phishing-suw5.onrender.com/predict`, { url });
     const { isSafe, confidence } = response.data;
 
     // Save result in MongoDB
