@@ -26,7 +26,7 @@ const App = () => {
   useEffect(() => {
     const verifyAuth = async () => {
       try {
-        const response = await axios.get("http://localhost:3000/auth", {
+        const response = await axios.get(`${import.meta.env.VITE_SERVER}/auth`, {
           withCredentials: true,
         });
         if (response.data.authenticated) {

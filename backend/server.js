@@ -21,7 +21,7 @@ connectDatabase();
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cookieParser()); // ✅ Enable cookie parsing
-app.use(cors({ origin: "http://localhost:5173", credentials: true })); // ✅ Allow credentials
+app.use(cors({ origin: process.env.CORS_URL, credentials: true })); // ✅ Allow credentials
 
 // ✅ Signup Route (Secure Cookie) - Updated version
 app.post("/signup", async (req, res) => {
@@ -158,7 +158,7 @@ app.get("/auth", (req, res) => {
 
 app.use("/api", urlRoutes);
 app.use("/users", userRoute);
-app.use("/contacts",ContactRoute)
+app.use("/contacts", ContactRoute);
 
 // Contact Us Route
 app.post("/send", async (req, res) => {
@@ -205,7 +205,7 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-const sendOtpEmail = async (email,name, otp) => {
+const sendOtpEmail = async (email, name, otp) => {
   const mailOptions = {
     from: `Support <${process.env.EMAIL}>`,
     to: email,
@@ -224,7 +224,7 @@ const sendOtpEmail = async (email,name, otp) => {
 
 // Send OTP API
 app.post("/send-otp", async (req, res) => {
-  const { email,name } = req.body;
+  const { email, name } = req.body;
   if (!email) return res.status(400).json({ error: "Email is required" });
   if (!name) return res.status(400).json({ error: "Name is required" });
 
@@ -232,7 +232,7 @@ app.post("/send-otp", async (req, res) => {
   otpStore[email] = { otp, expiresAt: Date.now() + 300000 };
 
   try {
-    await sendOtpEmail(email,name, otp);
+    await sendOtpEmail(email, name, otp);
     res.json({
       message: "OTP sent successfully! Check your inbox/spam folder.",
     });
