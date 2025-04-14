@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Route, Routes, useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
-import Cookies from "js-cookie"; // Import js-cookie
+import Cookies from "js-cookie";
 import Login from "./components/Login";
 import Signup from "./components/Signup";
 import Home from "./components/Home";
@@ -29,7 +29,6 @@ const App = () => {
     try {
       const token = Cookies.get('auth_token'); // Get token from cookies
 
-      // If there is no token, set authentication state to false
       if (!token) {
         setIsAuthenticated(false);
         if (location.pathname !== "/signup" && location.pathname !== "/login") {
@@ -45,9 +44,11 @@ const App = () => {
         withCredentials: true,
       });
 
-      console.log("Auth response:", response.data); // Debug log
       if (response.data.authenticated) {
         setIsAuthenticated(true);
+        if (location.pathname === "/login" || location.pathname === "/signup") {
+          navigate("/");  // Redirect to Home if already authenticated
+        }
       } else {
         setIsAuthenticated(false);
         if (location.pathname !== "/signup" && location.pathname !== "/login") {
@@ -55,17 +56,9 @@ const App = () => {
         }
       }
 
-      if (response.data.isAdmin) {
-        setIsAdmin(true);
-      } else {
-        setIsAdmin(false);
-      }
+      setIsAdmin(response.data.isAdmin);
     } catch (error) {
-      console.error("Authentication check failed:", {
-        message: error.message,
-        response: error.response?.data,
-        status: error.response?.status,
-      });
+      console.error("Authentication check failed:", error);
       setIsAuthenticated(false);
       if (location.pathname !== "/signup" && location.pathname !== "/login") {
         navigate("/login");
@@ -75,15 +68,7 @@ const App = () => {
 
   useEffect(() => {
     verifyAuth();
-  }, [navigate, location.pathname]);
-
-  // Expose verifyAuth to child components via window (temporary for debugging)
-  useEffect(() => {
-    window.verifyAuth = verifyAuth; // Allows Login/Signup to trigger auth check
-    return () => {
-      delete window.verifyAuth; // Cleanup
-    };
-  }, []);
+  }, [navigate, location.pathname]);  // Dependency array ensures rerun when location changes
 
   if (isAuthenticated === null) {
     return (
@@ -151,19 +136,10 @@ const App = () => {
         {/* Protected Routes */}
         <Route path="/" element={isAuthenticated ? <Home /> : <Login />} />
         <Route path="/tools" element={isAuthenticated ? <Tools /> : <Login />} />
-        <Route
-          path="/contact"
-          element={isAuthenticated ? <Contact /> : <Login />}
-        />
+        <Route path="/contact" element={isAuthenticated ? <Contact /> : <Login />} />
         <Route path="/about" element={isAuthenticated ? <About /> : <Login />} />
-        <Route
-          path="/phishing-checker"
-          element={isAuthenticated ? <Phishing /> : <Login />}
-        />
-        <Route
-          path="/dark-web"
-          element={isAuthenticated ? <DarkWeb /> : <Login />}
-        />
+        <Route path="/phishing-checker" element={isAuthenticated ? <Phishing /> : <Login />} />
+        <Route path="/dark-web" element={isAuthenticated ? <DarkWeb /> : <Login />} />
 
         {/* Admin Routes */}
         <Route path="/admin" element={isAdmin ? <Admin /> : <Notfound />}>
