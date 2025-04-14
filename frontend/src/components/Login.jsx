@@ -51,22 +51,22 @@ const Login = () => {
   return (
     <div className="login">
       <h1>Login Page</h1>
-      <form>
+      <form onSubmit={handleSubmit}>
         {successMessage && <p style={{ color: "green" }}>{successMessage}</p>}
         {errorMessage && <p style={{ color: "red" }}>{errorMessage}</p>}
         <div className="position-relative">
-        <label htmlFor="email">
-          Email:
-          <input
-            type="email"
-            name="email"
-            id="email"
-            className="form-control"
-            value={user.email}
-            onChange={(e) => setUser({ ...user, email: e.target.value })}
-            required
-          />
-        </label>
+          <label htmlFor="email">
+            Email:
+            <input
+              type="email"
+              name="email"
+              id="email"
+              className="form-control"
+              value={user.email}
+              onChange={(e) => setUser({ ...user, email: e.target.value })}
+              required
+            />
+          </label>
         </div>
         <label htmlFor="password">
           Password:
@@ -82,9 +82,7 @@ const Login = () => {
               required
             />
             <i
-              className={`bi ${
-                showPass ? "bi-eye-slash" : "bi-eye"
-              } position-absolute`}
+              className={`bi ${showPass ? "bi-eye-slash" : "bi-eye"} position-absolute`}
               style={{
                 right: "10px",
                 top: "50%",
@@ -100,7 +98,6 @@ const Login = () => {
           <input
             type="submit"
             value="Submit"
-            onClick={handleSubmit}
             id="submit_btn"
           />
           <input

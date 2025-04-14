@@ -21,6 +21,7 @@ connectDatabase();
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cookieParser()); // ✅ Enable cookie parsing
+
 const allowedOrigins = [
   "http://localhost:5173", // Development
   "https://phishing-detection.netlify.app", // Production
@@ -57,7 +58,7 @@ app.post("/signup", async (req, res) => {
   // Automatically log in the user after signup
   const jwtToken = jwt.sign({ email }, secretKey, { expiresIn: "1h" });
   res.cookie("authToken", jwtToken, {
-    httpOnly: false,
+    httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: "None", // Allow cross-site requests
     maxAge: 60 * 60 * 1000,
@@ -67,7 +68,7 @@ app.post("/signup", async (req, res) => {
   if (email === process.env.EMAILADD && password === process.env.PASSWORD) {
     const adminToken = jwt.sign({ email }, adminSecretKey, { expiresIn: "3h" });
     res.cookie("adminToken", adminToken, {
-      httpOnly: false,
+      httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "None", // Allow cross-site requests
       maxAge: 60 * 60 * 1000,
@@ -97,7 +98,7 @@ app.post("/login", async (req, res) => {
 
   const jwtToken = jwt.sign({ email }, secretKey, { expiresIn: "1h" });
   res.cookie("authToken", jwtToken, {
-    httpOnly: false,
+    httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: "None", // Allow cross-site requests
     maxAge: 60 * 60 * 1000,
@@ -107,7 +108,7 @@ app.post("/login", async (req, res) => {
   if (email === process.env.EMAILADD && password === process.env.PASSWORD) {
     const adminToken = jwt.sign({ email }, adminSecretKey, { expiresIn: "3h" });
     res.cookie("adminToken", adminToken, {
-      httpOnly: false,
+      httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "None", // Allow cross-site requests
       maxAge: 60 * 60 * 1000,
@@ -121,14 +122,14 @@ app.post("/login", async (req, res) => {
 // ✅ Logout Route (Clears Cookie)
 app.post("/logout", (req, res) => {
   res.cookie("authToken", "", {
-    httpOnly: false,
+    httpOnly: true,
     secure: process.env.NODE_ENV === "production", // Consistent with production
     sameSite: "None", // Match login/signup
     expires: new Date(0), // Forces immediate expiration
     path: "/",
   });
   res.cookie("adminToken", "", {
-    httpOnly: false,
+    httpOnly: true,
     secure: process.env.NODE_ENV === "production", // Consistent with production
     sameSite: "None", // Match login/signup
     expires: new Date(0), // Forces immediate expiration
@@ -226,7 +227,7 @@ const sendOtpEmail = async (email, name, otp) => {
             <h2 style="color:#333;">Dear ${name}</h2>
             <p>Your One-Time Password (OTP) for secure access is: <strong style="font-size:18px;">${otp}</strong></p>
             <p>This code is valid for the next 5 minutes.Please enter it on the verification page to proceed.</p>
-            <p>if you didn't request this OTP,please ignore this email.</p>
+            <p>If you didn't request this OTP, please ignore this email.</p>
             <br>
             <p>Regards,<br><b>DarkShield Security Team</b></p>
           </div>`,
