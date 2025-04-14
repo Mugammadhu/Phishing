@@ -23,7 +23,7 @@ app.use(express.json());
 app.use(cookieParser()); // ✅ Enable cookie parsing
 const allowedOrigins = [
   "http://localhost:5173", // Development
-  "https://phishing-url-detection-blue.vercel.app", // Production
+  "https://phishing-detection.netlify.app/", // Production
 ];
 
 app.use(
