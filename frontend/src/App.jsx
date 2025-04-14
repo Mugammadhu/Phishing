@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Route, Routes, useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
+import Cookies from "js-cookie"; // Import js-cookie
 import Login from "./components/Login";
 import Signup from "./components/Signup";
 import Home from "./components/Home";
@@ -26,9 +27,24 @@ const App = () => {
   // Function to verify authentication
   const verifyAuth = async () => {
     try {
+      const token = Cookies.get('auth_token'); // Get token from cookies
+
+      // If there is no token, set authentication state to false
+      if (!token) {
+        setIsAuthenticated(false);
+        if (location.pathname !== "/signup" && location.pathname !== "/login") {
+          navigate("/login");
+        }
+        return;
+      }
+
       const response = await axios.get(`${import.meta.env.VITE_SERVER}/auth`, {
+        headers: {
+          Authorization: `Bearer ${token}`, // Include token in Authorization header
+        },
         withCredentials: true,
       });
+
       console.log("Auth response:", response.data); // Debug log
       if (response.data.authenticated) {
         setIsAuthenticated(true);
@@ -38,6 +54,7 @@ const App = () => {
           navigate("/login");
         }
       }
+
       if (response.data.isAdmin) {
         setIsAdmin(true);
       } else {
@@ -148,12 +165,13 @@ const App = () => {
           element={isAuthenticated ? <DarkWeb /> : <Login />}
         />
 
+        {/* Admin Routes */}
         <Route path="/admin" element={isAdmin ? <Admin /> : <Notfound />}>
           <Route index element={<Users />} />
           <Route path="contacts" element={<ContactInfo />} />
         </Route>
 
-        {/* Authentication */}
+        {/* Authentication Routes */}
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
 
