@@ -23,21 +23,15 @@ app.use(express.json());
 app.use(cookieParser()); // ✅ Enable cookie parsing
 const allowedOrigins = [
   "http://localhost:5173", // Development
-  "https://phishing-detection.netlify.app/", // Production
+  "https://phishing-detection.netlify.app", // Production
 ];
 
 app.use(
   cors({
-    origin: (origin, callback) => {
-      // Allow requests with no origin (like mobile apps or curl)
-      if (!origin) return callback(null, true);
-      if (allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error("Not allowed by CORS"));
-      }
-    },
+    origin: allowedOrigins,
     credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
 
