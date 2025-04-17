@@ -108,6 +108,7 @@ app.post("/login", async (req, res) => {
 });
 
 app.post("/logout", (req, res) => {
+  console.log("Logout request received"); // Debug
   res.cookie("authToken", "", {
     httpOnly: true,
     secure: true,

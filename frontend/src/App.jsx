@@ -28,6 +28,9 @@ const App = () => {
       try {
         const token = localStorage.getItem("authToken");
         console.log("Token from localStorage:", token); // Debug
+        if (!token && !["/login", "/signup"].includes(location.pathname)) {
+          throw new Error("No token found");
+        }
         const headers = {
           "Content-Type": "application/json",
           Accept: "application/json",
@@ -132,6 +135,10 @@ const App = () => {
     <div>
       <Navbar />
       <Routes>
+        {/* Authentication Routes */}
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
+
         {/* Protected Routes */}
         <Route path="/" element={isAuthenticated ? <Home /> : <Login />} />
         <Route path="/home" element={isAuthenticated ? <Home /> : <Login />} />
@@ -159,10 +166,6 @@ const App = () => {
           <Route index element={<Users />} />
           <Route path="contacts" element={<ContactInfo />} />
         </Route>
-
-        {/* Authentication Routes */}
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
 
         {/* 404 Page */}
         <Route path="*" element={<Notfound />} />
