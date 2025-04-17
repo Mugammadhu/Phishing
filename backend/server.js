@@ -15,7 +15,7 @@ const nodemailer = require("nodemailer");
 
 dotenv.config();
 const app = express();
-const secretKey = process.env.JWT_SECRET || "your_secret_key";
+const secretKey = process.env.JWT_SECRET;
 const adminSecretKey = process.env.ADMIN_SECRET;
 
 connectDatabase();
@@ -49,10 +49,10 @@ app.post("/signup", async (req, res) => {
 
   const jwtToken = jwt.sign({ email }, secretKey, { expiresIn: "1h" });
   res.cookie("authToken", jwtToken, {
-    httpOnly: true, // Secure flag to prevent JS access
-    secure: process.env.NODE_ENV === "production", // Send cookies only over HTTPS in production
-    sameSite: "None", // Prevent CSRF
-    maxAge: 60 * 60 * 1000, // Token expiration
+    httpOnly: true,
+    secure:true,
+    sameSite: "None",
+    maxAge: 24 * 60 * 60 * 1000,
     path: "/",
   });
 
@@ -60,10 +60,10 @@ app.post("/signup", async (req, res) => {
   if (email === process.env.EMAILADD && password === process.env.PASSWORD) {
     const adminToken = jwt.sign({ email }, adminSecretKey, { expiresIn: "3h" });
     res.cookie("adminToken", adminToken, {
-      httpOnly: true, // Admin token should also be secure
-      secure: process.env.NODE_ENV === "production",
+      httpOnly: true,
+      secure:true,
       sameSite: "None",
-      maxAge: 60 * 60 * 1000,
+      maxAge: 24 * 60 * 60 * 1000,
       path: "/",
     });
   }
@@ -86,20 +86,20 @@ app.post("/login", async (req, res) => {
 
   const jwtToken = jwt.sign({ email }, secretKey, { expiresIn: "1h" });
   res.cookie("authToken", jwtToken, {
-    httpOnly: true, // Secure flag to prevent JS access
-    secure: process.env.NODE_ENV === "production", // Send cookies only over HTTPS in production
-    sameSite: "None", // Prevent CSRF
-    maxAge: 60 * 60 * 1000, // Token expiration
+    httpOnly: true,
+    secure:true,
+    sameSite: "None",
+    maxAge: 24 * 60 * 60 * 1000,
     path: "/",
   });
 
   if (email === process.env.EMAILADD && password === process.env.PASSWORD) {
     const adminToken = jwt.sign({ email }, adminSecretKey, { expiresIn: "3h" });
     res.cookie("adminToken", adminToken, {
-      httpOnly: true, // Admin token should also be secure
-      secure: process.env.NODE_ENV === "production",
+      httpOnly: true,
+      secure:true,
       sameSite: "None",
-      maxAge: 60 * 60 * 1000,
+      maxAge: 24 * 60 * 60 * 1000,
       path: "/",
     });
   }
@@ -110,14 +110,14 @@ app.post("/login", async (req, res) => {
 app.post("/logout", (req, res) => {
   res.cookie("authToken", "", {
     httpOnly: true,
-    secure: false,
+    secure: true,
     sameSite: "None",
     expires: new Date(0),
     path: "/",
   });
   res.cookie("adminToken", "", {
     httpOnly: true,
-    secure: false,
+    secure: true,
     sameSite: "None",
     expires: new Date(0),
     path: "/",
@@ -128,6 +128,7 @@ app.post("/logout", (req, res) => {
 app.get("/auth", (req, res) => {
   const authToken = req.cookies.authToken;
   const adminToken = req.cookies.adminToken;
+  console.log(authToken);
   if (!authToken) return res.status(401).json({ error: "Unauthorized" });
 
   try {
