@@ -51,7 +51,7 @@ app.post("/signup", async (req, res) => {
   res.cookie("authToken", jwtToken, {
     httpOnly: true, // Secure flag to prevent JS access
     secure: process.env.NODE_ENV === "production", // Send cookies only over HTTPS in production
-    sameSite: "Strict", // Prevent CSRF
+    sameSite: "None", // Prevent CSRF
     maxAge: 60 * 60 * 1000, // Token expiration
     path: "/",
   });
@@ -62,7 +62,7 @@ app.post("/signup", async (req, res) => {
     res.cookie("adminToken", adminToken, {
       httpOnly: true, // Admin token should also be secure
       secure: process.env.NODE_ENV === "production",
-      sameSite: "Strict",
+      sameSite: "None",
       maxAge: 60 * 60 * 1000,
       path: "/",
     });
@@ -88,7 +88,7 @@ app.post("/login", async (req, res) => {
   res.cookie("authToken", jwtToken, {
     httpOnly: true, // Secure flag to prevent JS access
     secure: process.env.NODE_ENV === "production", // Send cookies only over HTTPS in production
-    sameSite: "Strict", // Prevent CSRF
+    sameSite: "None", // Prevent CSRF
     maxAge: 60 * 60 * 1000, // Token expiration
     path: "/",
   });
@@ -98,7 +98,7 @@ app.post("/login", async (req, res) => {
     res.cookie("adminToken", adminToken, {
       httpOnly: true, // Admin token should also be secure
       secure: process.env.NODE_ENV === "production",
-      sameSite: "Strict",
+      sameSite: "None",
       maxAge: 60 * 60 * 1000,
       path: "/",
     });
@@ -111,14 +111,14 @@ app.post("/logout", (req, res) => {
   res.cookie("authToken", "", {
     httpOnly: true,
     secure: false,
-    sameSite: "Lax",
+    sameSite: "None",
     expires: new Date(0),
     path: "/",
   });
   res.cookie("adminToken", "", {
     httpOnly: true,
     secure: false,
-    sameSite: "Lax",
+    sameSite: "None",
     expires: new Date(0),
     path: "/",
   });
