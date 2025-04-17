@@ -25,7 +25,7 @@ const Login = () => {
         setSuccessMessage(data.message);
         setErrorMessage("");
         setTimeout(() => {
-          navigate("/dashboard");
+          navigate("/");
         }, 1000);
       } else if (response.status === 404) {
         setErrorMessage(data.error);
