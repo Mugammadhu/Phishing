@@ -130,6 +130,8 @@ app.post("/logout", (req, res) => {
 app.get("/auth", (req, res) => {
   const authToken = req.cookies.authToken;
   const adminToken = req.cookies.adminToken;
+  console.log(authToken);
+  console.log(adminToken);
 
   if (!authToken) {
     return res.status(401).json({ error: "Unauthorized" });
@@ -267,14 +269,7 @@ app.post("/verify-otp", async (req, res) => {
 
 
 //testing
-app.get('/check-cookie', (req, res) => {
-  const cookie = req.cookies.authToken;
-  if (cookie) {
-    res.json({ authToken: cookie });
-  } else {
-    res.status(401).json({ message: 'No cookie found' });
-  }
-});
+
 
 
 //end
