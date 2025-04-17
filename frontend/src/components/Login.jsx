@@ -29,8 +29,9 @@ const Login = () => {
         setSuccessMessage(data.message);
         setErrorMessage("");
         localStorage.setItem("authToken", data.token); // Store token
+        console.log("Stored authToken:", data.token); // Debug
         setTimeout(() => {
-          navigate("/");
+          navigate("/home"); // Navigate to /home
         }, 1000);
       } else if (response.status === 404) {
         setErrorMessage(data.error);

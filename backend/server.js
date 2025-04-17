@@ -56,7 +56,6 @@ app.post("/signup", async (req, res) => {
     path: "/",
   });
 
-  // Admin check
   if (email === process.env.EMAILADD && password === process.env.PASSWORD) {
     const adminToken = jwt.sign({ email }, adminSecretKey, { expiresIn: "3h" });
     res.cookie("adminToken", adminToken, {
@@ -71,7 +70,7 @@ app.post("/signup", async (req, res) => {
   res.json({
     message: "User created and logged in successfully",
     user: { name: newUser.name, email: newUser.email },
-    token: jwtToken, // Return token for localStorage
+    token: jwtToken,
   });
 });
 
@@ -105,7 +104,7 @@ app.post("/login", async (req, res) => {
     });
   }
 
-  res.json({ message: "Login successful", token: jwtToken }); // Return token for localStorage
+  res.json({ message: "Login successful", token: jwtToken });
 });
 
 app.post("/logout", (req, res) => {
@@ -132,7 +131,10 @@ app.get("/auth", (req, res) => {
   const authToken = req.cookies.authToken || (req.headers.authorization?.startsWith("Bearer ") ? req.headers.authorization.split("Bearer ")[1] : null);
   const adminToken = req.cookies.adminToken;
   console.log("authToken:", authToken); // Debug
-  if (!authToken) return res.status(401).json({ error: "Unauthorized" });
+  if (!authToken) {
+    console.log("No authToken found in cookies or Authorization header"); // Debug
+    return res.status(401).json({ error: "Unauthorized" });
+  }
 
   try {
     const decodedUser = jwt.verify(authToken, secretKey);

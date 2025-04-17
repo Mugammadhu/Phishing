@@ -23,9 +23,11 @@ const App = () => {
   const location = useLocation();
 
   useEffect(() => {
+    console.log("Current path:", location.pathname); // Debug
     const verifyAuth = async () => {
       try {
         const token = localStorage.getItem("authToken");
+        console.log("Token from localStorage:", token); // Debug
         const headers = {
           "Content-Type": "application/json",
           Accept: "application/json",
@@ -48,7 +50,8 @@ const App = () => {
           setIsAuthenticated(false);
           setIsAdmin(false);
           if (!["/login", "/signup"].includes(location.pathname)) {
-            navigate("/login");
+            console.log("Redirecting to /login from:", location.pathname); // Debug
+            navigate("/login", { replace: true });
           }
         }
       } catch (error) {
@@ -56,14 +59,16 @@ const App = () => {
         setIsAuthenticated(false);
         setIsAdmin(false);
         if (!["/login", "/signup"].includes(location.pathname)) {
-          navigate("/login");
+          console.log("Redirecting to /login from:", location.pathname); // Debug
+          navigate("/login", { replace: true });
         }
       }
     };
     verifyAuth();
   }, [navigate, location.pathname]);
 
-  if (isAuthenticated === null)
+  if (isAuthenticated === null) {
+    console.log("Rendering loading screen"); // Debug
     return (
       <div className="loading-screen">
         <motion.div
@@ -120,13 +125,16 @@ const App = () => {
         </motion.div>
       </div>
     );
+  }
 
+  console.log("Rendering routes, isAuthenticated:", isAuthenticated, "isAdmin:", isAdmin); // Debug
   return (
     <div>
       <Navbar />
       <Routes>
         {/* Protected Routes */}
         <Route path="/" element={isAuthenticated ? <Home /> : <Login />} />
+        <Route path="/home" element={isAuthenticated ? <Home /> : <Login />} />
         <Route
           path="/tools"
           element={isAuthenticated ? <Tools /> : <Login />}
@@ -147,7 +155,6 @@ const App = () => {
           path="/dark-web"
           element={isAuthenticated ? <DarkWeb /> : <Login />}
         />
-
         <Route path="/admin" element={isAdmin ? <Admin /> : <Notfound />}>
           <Route index element={<Users />} />
           <Route path="contacts" element={<ContactInfo />} />
