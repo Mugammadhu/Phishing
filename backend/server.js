@@ -263,4 +263,20 @@ app.post("/verify-otp", async (req, res) => {
   res.json({ message: "OTP verified successfully!" });
 });
 
+
+
+
+//testing
+app.get('/check-cookie', (req, res) => {
+  const cookie = req.cookies.authToken;
+  if (cookie) {
+    res.json({ authToken: cookie });
+  } else {
+    res.status(401).json({ message: 'No cookie found' });
+  }
+});
+
+
+//end
+
 app.listen(3000, () => console.log("Server running on port 3000"));

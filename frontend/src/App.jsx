@@ -20,15 +20,26 @@ import DarkWeb from "./components/Darkweb";
 const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(null);
   const [isAdmin, setIsAdmin] = useState(null);
+  const [cookie, setIsCookie] = useState(null);
   const navigate = useNavigate();
   const location = useLocation(); // Get current route
 
   useEffect(() => {
     const verifyAuth = async () => {
       try {
-        const response = await axios.get(`${import.meta.env.VITE_SERVER}/auth`, {
-          withCredentials: true,
-        });
+        const response = await axios.get(
+          `${import.meta.env.VITE_SERVER}/auth`,
+          {
+            withCredentials: true,
+          }
+        );
+        const cookie=await axios.get(`${import.meta.env.VITE_SERVER}/check-cookie`,
+          {
+            withCredentials: true,
+          });
+
+          await setIsCookie(cookie);
+
         if (response.data.authenticated) {
           setIsAuthenticated(true);
         } else {
@@ -116,6 +127,8 @@ const App = () => {
   return (
     <div>
       <Navbar />
+      <p>{isAuthenticated}</p>
+      <p>{cookie}</p>
       <Routes>
         {/* Protected Routes */}
         <Route path="/" element={isAuthenticated ? <Home /> : <Login />} />
