@@ -24,7 +24,7 @@ const App = () => {
 
   useEffect(() => {
     console.log("Current path:", location.pathname); // Debug
-    const verifyAuth = async () => {
+    const verifyAuth = async (retries = 2, delay = 1000) => {
       try {
         const token = localStorage.getItem("authToken");
         console.log("Token from localStorage:", token); // Debug
@@ -47,15 +47,15 @@ const App = () => {
           setIsAuthenticated(true);
           setIsAdmin(data.isAdmin || false);
         } else {
-          setIsAuthenticated(false);
-          setIsAdmin(false);
-          if (!["/login", "/signup"].includes(location.pathname)) {
-            console.log("Redirecting to /login from:", location.pathname); // Debug
-            navigate("/login", { replace: true });
-          }
+          throw new Error(data.error || "Authentication failed");
         }
       } catch (error) {
         console.error("Authentication check failed:", error.message); // Debug
+        if (retries > 0) {
+          console.log(`Retrying auth check, ${retries} attempts left`); // Debug
+          await new Promise((resolve) => setTimeout(resolve, delay));
+          return verifyAuth(retries - 1, delay);
+        }
         setIsAuthenticated(false);
         setIsAdmin(false);
         if (!["/login", "/signup"].includes(location.pathname)) {
