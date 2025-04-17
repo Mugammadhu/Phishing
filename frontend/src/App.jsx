@@ -23,11 +23,11 @@ const App = () => {
   const location = useLocation();
 
   useEffect(() => {
-    console.log("Current path:", location.pathname); // Debug
+    console.log("App: Current path:", location.pathname); // Debug
     const verifyAuth = async (retries = 2, delay = 1000) => {
       try {
         const token = localStorage.getItem("authToken");
-        console.log("Token from localStorage:", token); // Debug
+        console.log("App: Token from localStorage:", token); // Debug
         if (!token && !["/login", "/signup"].includes(location.pathname)) {
           throw new Error("No token found");
         }
@@ -44,7 +44,7 @@ const App = () => {
           credentials: "include",
         });
         const data = await response.json();
-        console.log("Auth response:", data); // Debug
+        console.log("App: Auth response:", data); // Debug
 
         if (response.ok && data.authenticated) {
           setIsAuthenticated(true);
@@ -53,16 +53,16 @@ const App = () => {
           throw new Error(data.error || "Authentication failed");
         }
       } catch (error) {
-        console.error("Authentication check failed:", error.message); // Debug
+        console.error("App: Authentication check failed:", error.message); // Debug
         if (retries > 0) {
-          console.log(`Retrying auth check, ${retries} attempts left`); // Debug
+          console.log(`App: Retrying auth check, ${retries} attempts left`); // Debug
           await new Promise((resolve) => setTimeout(resolve, delay));
           return verifyAuth(retries - 1, delay);
         }
         setIsAuthenticated(false);
         setIsAdmin(false);
         if (!["/login", "/signup"].includes(location.pathname)) {
-          console.log("Redirecting to /login from:", location.pathname); // Debug
+          console.log("App: Redirecting to /login from:", location.pathname); // Debug
           navigate("/login", { replace: true });
         }
       }
@@ -71,7 +71,7 @@ const App = () => {
   }, [navigate, location.pathname]);
 
   if (isAuthenticated === null) {
-    console.log("Rendering loading screen"); // Debug
+    console.log("App: Rendering loading screen"); // Debug
     return (
       <div className="loading-screen">
         <motion.div
@@ -130,7 +130,7 @@ const App = () => {
     );
   }
 
-  console.log("Rendering routes, isAuthenticated:", isAuthenticated, "isAdmin:", isAdmin); // Debug
+  console.log("App: Rendering routes, isAuthenticated:", isAuthenticated, "isAdmin:", isAdmin); // Debug
   return (
     <div>
       <Navbar />

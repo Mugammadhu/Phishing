@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
-import '../styles/navbar.css';
+import "../styles/navbar.css";
 import { useState, useEffect } from "react";
 import { useCookies } from "react-cookie";
 import axios from "axios";
@@ -14,17 +14,28 @@ const Navbar = () => {
     useEffect(() => {
         const verifyAuth = async () => {
             try {
+                const token = localStorage.getItem("authToken");
+                console.log("Navbar: Token from localStorage:", token); // Debug
+                const headers = {
+                    "Content-Type": "application/json",
+                    Accept: "application/json",
+                };
+                if (token) {
+                    headers["Authorization"] = `Bearer ${token}`;
+                }
                 const response = await axios.get(`${import.meta.env.VITE_SERVER}/auth`, {
+                    headers,
                     withCredentials: true,
                 });
+                console.log("Navbar: Auth response:", response.data); // Debug
                 setIsAdmin(response.data?.isAdmin || false);
-            // eslint-disable-next-line no-unused-vars
             } catch (error) {
+                console.error("Navbar: Auth check failed:", error.message); // Debug
                 setIsAdmin(false);
             }
         };
-        
-        if (cookies.authToken) {
+
+        if (cookies.authToken || localStorage.getItem("authToken")) {
             verifyAuth();
         } else {
             setIsAdmin(false);
@@ -32,21 +43,20 @@ const Navbar = () => {
     }, [cookies.authToken]);
 
     const handleLogout = async () => {
-        if (!cookies.authToken) return;
+        if (!cookies.authToken && !localStorage.getItem("authToken")) return;
         setShowSpinner(true);
-        
+
         try {
-            // Start both the logout request and the timer simultaneously
             await Promise.all([
                 axios.post(
-                    `${import.meta.env.VITE_SERVER}/logout`, 
-                    {}, 
+                    `${import.meta.env.VITE_SERVER}/logout`,
+                    {},
                     { withCredentials: true }
                 ),
-                new Promise(resolve => setTimeout(resolve, 1500)) // 1.5 second delay
+                new Promise(resolve => setTimeout(resolve, 1500)),
             ]);
-            
             removeCookie("authToken", { path: "/" });
+            localStorage.removeItem("authToken"); // Clear localStorage
             setIsAdmin(false);
             navigate("/login");
         } catch (error) {

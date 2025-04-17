@@ -33,6 +33,7 @@ app.use(cookieParser());
 
 app.post("/signup", async (req, res) => {
   const { name, email, password } = req.body;
+  console.log("Signup attempt:", { email }); // Debug
   if (!name || !email || !password)
     return res.status(400).json({ error: "All fields are required" });
 
@@ -56,7 +57,9 @@ app.post("/signup", async (req, res) => {
     path: "/",
   });
 
-  if (email === process.env.EMAILADD && password === process.env.PASSWORD) {
+  const isAdmin = email === process.env.EMAILADD;
+  console.log("Signup: isAdmin check:", { email, isAdmin, EMAILADD: process.env.EMAILADD }); // Debug
+  if (isAdmin) {
     const adminToken = jwt.sign({ email }, adminSecretKey, { expiresIn: "3h" });
     res.cookie("adminToken", adminToken, {
       httpOnly: true,
@@ -76,6 +79,7 @@ app.post("/signup", async (req, res) => {
 
 app.post("/login", async (req, res) => {
   const { email, password } = req.body;
+  console.log("Login attempt:", { email }); // Debug
   if (!email || !password) return res.status(400).json({ error: "All fields required" });
 
   const user = await userModel.findOne({ email });
@@ -93,7 +97,9 @@ app.post("/login", async (req, res) => {
     path: "/",
   });
 
-  if (email === process.env.EMAILADD && password === process.env.PASSWORD) {
+  const isAdmin = email === process.env.EMAILADD;
+  console.log("Login: isAdmin check:", { email, isAdmin, EMAILADD: process.env.EMAILADD }); // Debug
+  if (isAdmin) {
     const adminToken = jwt.sign({ email }, adminSecretKey, { expiresIn: "3h" });
     res.cookie("adminToken", adminToken, {
       httpOnly: true,
@@ -132,6 +138,7 @@ app.get("/auth", (req, res) => {
   const authToken = req.cookies.authToken || (req.headers.authorization?.startsWith("Bearer ") ? req.headers.authorization.split("Bearer ")[1] : null);
   const adminToken = req.cookies.adminToken;
   console.log("authToken:", authToken); // Debug
+  console.log("adminToken:", adminToken); // Debug
   if (!authToken) {
     console.log("No authToken found in cookies or Authorization header"); // Debug
     return res.status(401).json({ error: "Unauthorized" });
@@ -151,6 +158,7 @@ app.get("/auth", (req, res) => {
     } else {
       response.isAdmin = false;
     }
+    console.log("Auth response:", response); // Debug
     res.json(response);
   } catch (error) {
     console.error("Token verification error:", error.message); // Debug
