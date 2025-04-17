@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { Route, Routes, useNavigate, useLocation } from "react-router-dom";
-import axios from "axios";
 import Login from "./components/Login";
 import Signup from "./components/Signup";
 import Home from "./components/Home";
@@ -26,16 +25,20 @@ const App = () => {
   useEffect(() => {
     const verifyAuth = async () => {
       try {
-        const response = await axios.get(
-          `${import.meta.env.VITE_SERVER}/auth`,
-          {
-            withCredentials: true,
-          }
-        );
-        console.log("Auth response:", response.data); // Debug
-        if (response.data.authenticated) {
+        const response = await fetch(`${import.meta.env.VITE_SERVER}/auth`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+          credentials: "include",
+        });
+        const data = await response.json();
+        console.log("Auth response:", data); // Debug
+
+        if (response.ok && data.authenticated) {
           setIsAuthenticated(true);
-          setIsAdmin(response.data.isAdmin || false);
+          setIsAdmin(data.isAdmin || false);
         } else {
           setIsAuthenticated(false);
           setIsAdmin(false);
@@ -44,7 +47,7 @@ const App = () => {
           }
         }
       } catch (error) {
-        console.error("Authentication check failed:", error.response?.data || error.message); // Debug
+        console.error("Authentication check failed:", error.message); // Debug
         setIsAuthenticated(false);
         setIsAdmin(false);
         if (!["/login", "/signup"].includes(location.pathname)) {

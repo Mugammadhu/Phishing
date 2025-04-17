@@ -17,12 +17,13 @@ const Login = () => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Accept: "application/json", // Ensure JSON response
+          Accept: "application/json",
         },
         body: JSON.stringify(user),
-        credentials: "include", // Ensure cookies are sent and received
+        credentials: "include",
       });
       const data = await response.json();
+      console.log("Login response:", data); // Debug
 
       if (response.ok) {
         setSuccessMessage(data.message);

@@ -23,6 +23,8 @@ app.use(
   cors({
     origin: process.env.FRONTEND_URL || "https://phishing-detection.netlify.app",
     credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
 app.use(express.urlencoded({ extended: true }));
@@ -124,9 +126,10 @@ app.post("/logout", (req, res) => {
 });
 
 app.get("/auth", (req, res) => {
+  console.log("Auth request headers:", req.headers); // Debug
+  console.log("Cookies:", req.cookies); // Debug
   const authToken = req.cookies.authToken;
   const adminToken = req.cookies.adminToken;
-  console.log("Cookies:", req.cookies); // Debug
   console.log("authToken:", authToken); // Debug
   if (!authToken) return res.status(401).json({ error: "Unauthorized" });
 
