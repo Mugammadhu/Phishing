@@ -15,9 +15,12 @@ const Login = () => {
     try {
       const response = await fetch(`${import.meta.env.VITE_SERVER}/login`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json", // Ensure JSON response
+        },
         body: JSON.stringify(user),
-        credentials: "include",
+        credentials: "include", // Ensure cookies are sent and received
       });
       const data = await response.json();
 
@@ -104,7 +107,7 @@ const Login = () => {
         </div>
 
         <p>
-          Don&apos;t have an account? <Link to="/signup">Signup</Link>
+          Don't have an account? <Link to="/signup">Signup</Link>
         </p>
       </form>
     </div>

@@ -21,7 +21,7 @@ const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(null);
   const [isAdmin, setIsAdmin] = useState(null);
   const navigate = useNavigate();
-  const location = useLocation(); // Get current route
+  const location = useLocation();
 
   useEffect(() => {
     const verifyAuth = async () => {
@@ -32,30 +32,28 @@ const App = () => {
             withCredentials: true,
           }
         );
-
+        console.log("Auth response:", response.data); // Debug
         if (response.data.authenticated) {
           setIsAuthenticated(true);
+          setIsAdmin(response.data.isAdmin || false);
         } else {
           setIsAuthenticated(false);
-          if (location.pathname !== "/signup") {
+          setIsAdmin(false);
+          if (!["/login", "/signup"].includes(location.pathname)) {
             navigate("/login");
           }
         }
-        if (response.data.isAdmin) {
-          setIsAdmin(true);
-        } else {
-          setIsAdmin(false);
-        }
       } catch (error) {
-        console.error("Authentication check failed", error);
+        console.error("Authentication check failed:", error.response?.data || error.message); // Debug
         setIsAuthenticated(false);
-        if (location.pathname !== "/signup") {
+        setIsAdmin(false);
+        if (!["/login", "/signup"].includes(location.pathname)) {
           navigate("/login");
         }
       }
     };
     verifyAuth();
-  }, [navigate, location.pathname]); // Depend on `location.pathname` to prevent unnecessary redirects
+  }, [navigate, location.pathname]);
 
   if (isAuthenticated === null)
     return (

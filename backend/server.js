@@ -1,4 +1,3 @@
-// ======================= server.js =======================
 const express = require("express");
 const bcrypt = require("bcrypt");
 const connectDatabase = require("./db.js");
@@ -19,17 +18,16 @@ const secretKey = process.env.JWT_SECRET;
 const adminSecretKey = process.env.ADMIN_SECRET;
 
 connectDatabase();
-app.use(express.urlencoded({ extended: true }));
-app.use(express.json());
-app.use(cookieParser());
-
 // CORS configuration
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL || "https://phishing-detection.netlify.app", // Use environment variable for flexibility
+    origin: process.env.FRONTEND_URL || "https://phishing-detection.netlify.app",
     credentials: true,
   })
 );
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+app.use(cookieParser());
 
 app.post("/signup", async (req, res) => {
   const { name, email, password } = req.body;
@@ -50,7 +48,7 @@ app.post("/signup", async (req, res) => {
   const jwtToken = jwt.sign({ email }, secretKey, { expiresIn: "1h" });
   res.cookie("authToken", jwtToken, {
     httpOnly: true,
-    secure:true,
+    secure: true,
     sameSite: "None",
     maxAge: 24 * 60 * 60 * 1000,
     path: "/",
@@ -61,7 +59,7 @@ app.post("/signup", async (req, res) => {
     const adminToken = jwt.sign({ email }, adminSecretKey, { expiresIn: "3h" });
     res.cookie("adminToken", adminToken, {
       httpOnly: true,
-      secure:true,
+      secure: true,
       sameSite: "None",
       maxAge: 24 * 60 * 60 * 1000,
       path: "/",
@@ -87,7 +85,7 @@ app.post("/login", async (req, res) => {
   const jwtToken = jwt.sign({ email }, secretKey, { expiresIn: "1h" });
   res.cookie("authToken", jwtToken, {
     httpOnly: true,
-    secure:true,
+    secure: true,
     sameSite: "None",
     maxAge: 24 * 60 * 60 * 1000,
     path: "/",
@@ -97,7 +95,7 @@ app.post("/login", async (req, res) => {
     const adminToken = jwt.sign({ email }, adminSecretKey, { expiresIn: "3h" });
     res.cookie("adminToken", adminToken, {
       httpOnly: true,
-      secure:true,
+      secure: true,
       sameSite: "None",
       maxAge: 24 * 60 * 60 * 1000,
       path: "/",
@@ -128,7 +126,8 @@ app.post("/logout", (req, res) => {
 app.get("/auth", (req, res) => {
   const authToken = req.cookies.authToken;
   const adminToken = req.cookies.adminToken;
-  console.log(authToken);
+  console.log("Cookies:", req.cookies); // Debug
+  console.log("authToken:", authToken); // Debug
   if (!authToken) return res.status(401).json({ error: "Unauthorized" });
 
   try {
@@ -147,6 +146,7 @@ app.get("/auth", (req, res) => {
     }
     res.json(response);
   } catch (error) {
+    console.error("Token verification error:", error.message); // Debug
     res.status(403).json({ error: "Invalid or expired token" });
   }
 });
