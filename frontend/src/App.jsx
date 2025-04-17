@@ -37,7 +37,6 @@ const App = () => {
           setIsAuthenticated(true);
         } else {
           setIsAuthenticated(false);
-          // 🛠️ **Fix:** Don't redirect if the user is already on the signup page
           if (location.pathname !== "/signup") {
             navigate("/login");
           }
@@ -95,7 +94,6 @@ const App = () => {
             Ensuring your safety in the digital world...
           </motion.p>
 
-          {/* Progress Bar */}
           <motion.div
             className="progress-bar-container"
             initial={{ width: "0%" }}
@@ -149,7 +147,7 @@ const App = () => {
           <Route path="contacts" element={<ContactInfo />} />
         </Route>
 
-        {/* Authentication */}
+        {/* Authentication Routes */}
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
 

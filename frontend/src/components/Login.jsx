@@ -14,18 +14,18 @@ const Login = () => {
     e.preventDefault();
     try {
       const response = await fetch(`${import.meta.env.VITE_SERVER}/login`, {
-        method: "post",
+        method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(user),
-        credentials: "include", // ✅ Ensures cookies are handled
+        credentials: "include",
       });
       const data = await response.json();
 
-      if (response.status === 200 || response.status === 201) {
+      if (response.ok) {
         setSuccessMessage(data.message);
         setErrorMessage("");
         setTimeout(() => {
-          navigate("/"); // ✅ Redirect to home page
+          navigate("/dashboard");
         }, 1000);
       } else if (response.status === 404) {
         setErrorMessage(data.error);
@@ -38,7 +38,8 @@ const Login = () => {
         setSuccessMessage("");
       }
     } catch (err) {
-      console.log(err);
+      console.error("Login error:", err);
+      setErrorMessage("Something went wrong. Please try again later.");
     }
     setUser({ email: "", password: "" });
   };
@@ -51,9 +52,10 @@ const Login = () => {
   return (
     <div className="login">
       <h1>Login Page</h1>
-      <form>
+      <form onSubmit={handleSubmit} onReset={handleReset}>
         {successMessage && <p style={{ color: "green" }}>{successMessage}</p>}
         {errorMessage && <p style={{ color: "red" }}>{errorMessage}</p>}
+
         <div className="position-relative">
           <label htmlFor="email">
             Email:
@@ -68,6 +70,7 @@ const Login = () => {
             />
           </label>
         </div>
+
         <label htmlFor="password">
           Password:
           <div className="position-relative">
@@ -82,9 +85,7 @@ const Login = () => {
               required
             />
             <i
-              className={`bi ${
-                showPass ? "bi-eye-slash" : "bi-eye"
-              } position-absolute`}
+              className={`bi ${showPass ? "bi-eye-slash" : "bi-eye"} position-absolute`}
               style={{
                 right: "10px",
                 top: "50%",
@@ -96,22 +97,14 @@ const Login = () => {
             ></i>
           </div>
         </label>
+
         <div className="btn_section">
-          <input
-            type="submit"
-            value="Submit"
-            onClick={handleSubmit}
-            id="submit_btn"
-          />
-          <input
-            type="reset"
-            value="Reset"
-            onClick={handleReset}
-            id="reset_btn"
-          />
+          <button type="submit" id="submit_btn">Submit</button>
+          <button type="reset" id="reset_btn">Reset</button>
         </div>
+
         <p>
-          If you already have an account <Link to="/signup">Signup</Link>
+          Don&apos;t have an account? <Link to="/signup">Signup</Link>
         </p>
       </form>
     </div>
