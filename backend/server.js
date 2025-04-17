@@ -21,7 +21,7 @@ connectDatabase();
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cookieParser()); // ✅ Enable cookie parsing
-app.use(cors({ origin: "http://localhost:5173", credentials: true })); // ✅ Allow credentials
+app.use(cors({ origin: "https://phishing-detection.netlify.app", credentials: true })); // ✅ Allow credentials
 
 // ✅ Signup Route (Secure Cookie) - Updated version
 app.post("/signup", async (req, res) => {
