@@ -28,6 +28,7 @@ const Login = () => {
       if (response.ok) {
         setSuccessMessage(data.message);
         setErrorMessage("");
+        localStorage.setItem("authToken", data.token); // Store token
         setTimeout(() => {
           navigate("/");
         }, 1000);

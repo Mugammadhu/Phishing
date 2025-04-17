@@ -71,6 +71,7 @@ app.post("/signup", async (req, res) => {
   res.json({
     message: "User created and logged in successfully",
     user: { name: newUser.name, email: newUser.email },
+    token: jwtToken, // Return token for localStorage
   });
 });
 
@@ -104,7 +105,7 @@ app.post("/login", async (req, res) => {
     });
   }
 
-  res.json({ message: "Login successful" });
+  res.json({ message: "Login successful", token: jwtToken }); // Return token for localStorage
 });
 
 app.post("/logout", (req, res) => {
@@ -128,7 +129,7 @@ app.post("/logout", (req, res) => {
 app.get("/auth", (req, res) => {
   console.log("Auth request headers:", req.headers); // Debug
   console.log("Cookies:", req.cookies); // Debug
-  const authToken = req.cookies.authToken;
+  const authToken = req.cookies.authToken || (req.headers.authorization?.startsWith("Bearer ") ? req.headers.authorization.split("Bearer ")[1] : null);
   const adminToken = req.cookies.adminToken;
   console.log("authToken:", authToken); // Debug
   if (!authToken) return res.status(401).json({ error: "Unauthorized" });

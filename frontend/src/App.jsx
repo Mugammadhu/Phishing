@@ -25,12 +25,17 @@ const App = () => {
   useEffect(() => {
     const verifyAuth = async () => {
       try {
+        const token = localStorage.getItem("authToken");
+        const headers = {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        };
+        if (token) {
+          headers["Authorization"] = `Bearer ${token}`;
+        }
         const response = await fetch(`${import.meta.env.VITE_SERVER}/auth`, {
           method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-          },
+          headers,
           credentials: "include",
         });
         const data = await response.json();
