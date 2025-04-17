@@ -51,7 +51,7 @@ const Login = () => {
   return (
     <div className="login">
       <h1>Login Page</h1>
-      <form onSubmit={handleSubmit}>
+      <form>
         {successMessage && <p style={{ color: "green" }}>{successMessage}</p>}
         {errorMessage && <p style={{ color: "red" }}>{errorMessage}</p>}
         <div className="position-relative">
@@ -82,7 +82,9 @@ const Login = () => {
               required
             />
             <i
-              className={`bi ${showPass ? "bi-eye-slash" : "bi-eye"} position-absolute`}
+              className={`bi ${
+                showPass ? "bi-eye-slash" : "bi-eye"
+              } position-absolute`}
               style={{
                 right: "10px",
                 top: "50%",
@@ -98,6 +100,7 @@ const Login = () => {
           <input
             type="submit"
             value="Submit"
+            onClick={handleSubmit}
             id="submit_btn"
           />
           <input

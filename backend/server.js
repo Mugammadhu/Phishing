@@ -21,22 +21,9 @@ connectDatabase();
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cookieParser()); // ✅ Enable cookie parsing
+app.use(cors({ origin: "http://localhost:5173", credentials: true })); // ✅ Allow credentials
 
-const allowedOrigins = [
-  "http://localhost:5173", // Development
-  "https://phishing-detection.netlify.app", // Production
-];
-
-app.use(
-  cors({
-    origin: allowedOrigins,
-    credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-  })
-);
-
-// ✅ Signup Route (Secure Cookie)
+// ✅ Signup Route (Secure Cookie) - Updated version
 app.post("/signup", async (req, res) => {
   const { name, email, password } = req.body;
   if (!name || !email || !password) {
@@ -58,9 +45,9 @@ app.post("/signup", async (req, res) => {
   // Automatically log in the user after signup
   const jwtToken = jwt.sign({ email }, secretKey, { expiresIn: "1h" });
   res.cookie("authToken", jwtToken, {
-    httpOnly: true,
+    httpOnly: false,
     secure: process.env.NODE_ENV === "production",
-    sameSite: "None", // Allow cross-site requests
+    sameSite: "Strict",
     maxAge: 60 * 60 * 1000,
     path: "/",
   });
@@ -68,9 +55,9 @@ app.post("/signup", async (req, res) => {
   if (email === process.env.EMAILADD && password === process.env.PASSWORD) {
     const adminToken = jwt.sign({ email }, adminSecretKey, { expiresIn: "3h" });
     res.cookie("adminToken", adminToken, {
-      httpOnly: true,
+      httpOnly: false,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "None", // Allow cross-site requests
+      sameSite: "Strict",
       maxAge: 60 * 60 * 1000,
       path: "/",
     });
@@ -98,19 +85,19 @@ app.post("/login", async (req, res) => {
 
   const jwtToken = jwt.sign({ email }, secretKey, { expiresIn: "1h" });
   res.cookie("authToken", jwtToken, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "None", // Allow cross-site requests
+    httpOnly: false,
+    secure: process.env.NODE_ENV === "production", // 🔥 Secure only in production
+    sameSite: "Strict",
     maxAge: 60 * 60 * 1000,
-    path: "/",
+    path: "/", // ✅ Ensure the path is set to "/"
   });
 
   if (email === process.env.EMAILADD && password === process.env.PASSWORD) {
     const adminToken = jwt.sign({ email }, adminSecretKey, { expiresIn: "3h" });
     res.cookie("adminToken", adminToken, {
-      httpOnly: true,
+      httpOnly: false,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "None", // Allow cross-site requests
+      sameSite: "Strict",
       maxAge: 60 * 60 * 1000,
       path: "/",
     });
@@ -122,18 +109,18 @@ app.post("/login", async (req, res) => {
 // ✅ Logout Route (Clears Cookie)
 app.post("/logout", (req, res) => {
   res.cookie("authToken", "", {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production", // Consistent with production
-    sameSite: "None", // Match login/signup
-    expires: new Date(0), // Forces immediate expiration
-    path: "/",
+    httpOnly: false,
+    secure: false, // ❗ Change to `true` in production with HTTPS
+    sameSite: "Lax",
+    expires: new Date(0), // ✅ Forces immediate expiration
+    path: "/", // ✅ Ensure the path matches the one used when setting the cookie
   });
   res.cookie("adminToken", "", {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production", // Consistent with production
-    sameSite: "None", // Match login/signup
-    expires: new Date(0), // Forces immediate expiration
-    path: "/",
+    httpOnly: false,
+    secure: false, // ❗ Change to `true` in production with HTTPS
+    sameSite: "Lax",
+    expires: new Date(0), // ✅ Forces immediate expiration
+    path: "/", // ✅ Ensure the path matches the one used when setting the cookie
   });
 
   res.status(200).json({ message: "Logged out successfully" });
@@ -171,7 +158,7 @@ app.get("/auth", (req, res) => {
 
 app.use("/api", urlRoutes);
 app.use("/users", userRoute);
-app.use("/contacts", ContactRoute);
+app.use("/contacts",ContactRoute)
 
 // Contact Us Route
 app.post("/send", async (req, res) => {
@@ -186,15 +173,15 @@ app.post("/send", async (req, res) => {
       },
     });
     let mailOptions = {
-      from: process.env.EMAIL, // Must be your authenticated email
-      to: process.env.EMAIL, // Sends to your email
+      from: process.env.EMAIL, // ✅ Must be your authenticated email
+      to: process.env.EMAIL, // ✅ Sends to your email
       subject: "New Contact Form Submission",
       text: `You received a new message from:
 
     Name: ${name}
     Email: ${email}
     Message: ${message}`,
-      replyTo: email, // When you hit "Reply," it replies to the user
+      replyTo: email, // ✅ When you hit "Reply," it replies to the user
     };
 
     await transporter.sendMail(mailOptions);
@@ -206,7 +193,7 @@ app.post("/send", async (req, res) => {
   }
 });
 
-// Send and verify OTP
+//send and verify otp
 let otpStore = {};
 const transporter = nodemailer.createTransport({
   host: "smtp.gmail.com",
@@ -218,7 +205,7 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-const sendOtpEmail = async (email, name, otp) => {
+const sendOtpEmail = async (email,name, otp) => {
   const mailOptions = {
     from: `Support <${process.env.EMAIL}>`,
     to: email,
@@ -227,7 +214,7 @@ const sendOtpEmail = async (email, name, otp) => {
             <h2 style="color:#333;">Dear ${name}</h2>
             <p>Your One-Time Password (OTP) for secure access is: <strong style="font-size:18px;">${otp}</strong></p>
             <p>This code is valid for the next 5 minutes.Please enter it on the verification page to proceed.</p>
-            <p>If you didn't request this OTP, please ignore this email.</p>
+            <p>if you didn't request this OTP,please ignore this email.</p>
             <br>
             <p>Regards,<br><b>DarkShield Security Team</b></p>
           </div>`,
@@ -237,7 +224,7 @@ const sendOtpEmail = async (email, name, otp) => {
 
 // Send OTP API
 app.post("/send-otp", async (req, res) => {
-  const { email, name } = req.body;
+  const { email,name } = req.body;
   if (!email) return res.status(400).json({ error: "Email is required" });
   if (!name) return res.status(400).json({ error: "Name is required" });
 
@@ -245,7 +232,7 @@ app.post("/send-otp", async (req, res) => {
   otpStore[email] = { otp, expiresAt: Date.now() + 300000 };
 
   try {
-    await sendOtpEmail(email, name, otp);
+    await sendOtpEmail(email,name, otp);
     res.json({
       message: "OTP sent successfully! Check your inbox/spam folder.",
     });

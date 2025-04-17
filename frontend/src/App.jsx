@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { Route, Routes, useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
-import Cookies from "js-cookie";
 import Login from "./components/Login";
 import Signup from "./components/Signup";
 import Home from "./components/Home";
@@ -22,55 +21,40 @@ const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(null);
   const [isAdmin, setIsAdmin] = useState(null);
   const navigate = useNavigate();
-  const location = useLocation();
-
-  // Function to verify authentication
-  const verifyAuth = async () => {
-    try {
-      const token = Cookies.get('auth_token'); // Get token from cookies
-
-      if (!token) {
-        setIsAuthenticated(false);
-        if (location.pathname !== "/signup" && location.pathname !== "/login") {
-          navigate("/login");
-        }
-        return;
-      }
-
-      const response = await axios.get(`${import.meta.env.VITE_SERVER}/auth`, {
-        headers: {
-          Authorization: `Bearer ${token}`, // Include token in Authorization header
-        },
-        withCredentials: true,
-      });
-
-      if (response.data.authenticated) {
-        setIsAuthenticated(true);
-        if (location.pathname === "/login" || location.pathname === "/signup") {
-          navigate("/");  // Redirect to Home if already authenticated
-        }
-      } else {
-        setIsAuthenticated(false);
-        if (location.pathname !== "/signup" && location.pathname !== "/login") {
-          navigate("/login");
-        }
-      }
-
-      setIsAdmin(response.data.isAdmin);
-    } catch (error) {
-      console.error("Authentication check failed:", error);
-      setIsAuthenticated(false);
-      if (location.pathname !== "/signup" && location.pathname !== "/login") {
-        navigate("/login");
-      }
-    }
-  };
+  const location = useLocation(); // Get current route
 
   useEffect(() => {
+    const verifyAuth = async () => {
+      try {
+        const response = await axios.get(`${import.meta.env.VITE_SERVER}/auth`, {
+          withCredentials: true,
+        });
+        if (response.data.authenticated) {
+          setIsAuthenticated(true);
+        } else {
+          setIsAuthenticated(false);
+          // 🛠️ **Fix:** Don't redirect if the user is already on the signup page
+          if (location.pathname !== "/signup") {
+            navigate("/login");
+          }
+        }
+        if (response.data.isAdmin) {
+          setIsAdmin(true);
+        } else {
+          setIsAdmin(false);
+        }
+      } catch (error) {
+        console.error("Authentication check failed", error);
+        setIsAuthenticated(false);
+        if (location.pathname !== "/signup") {
+          navigate("/login");
+        }
+      }
+    };
     verifyAuth();
-  }, [navigate, location.pathname]);  // Dependency array ensures rerun when location changes
+  }, [navigate, location.pathname]); // Depend on `location.pathname` to prevent unnecessary redirects
 
-  if (isAuthenticated === null) {
+  if (isAuthenticated === null)
     return (
       <div className="loading-screen">
         <motion.div
@@ -107,6 +91,7 @@ const App = () => {
             Ensuring your safety in the digital world...
           </motion.p>
 
+          {/* Progress Bar */}
           <motion.div
             className="progress-bar-container"
             initial={{ width: "0%" }}
@@ -127,7 +112,6 @@ const App = () => {
         </motion.div>
       </div>
     );
-  }
 
   return (
     <div>
@@ -135,19 +119,33 @@ const App = () => {
       <Routes>
         {/* Protected Routes */}
         <Route path="/" element={isAuthenticated ? <Home /> : <Login />} />
-        <Route path="/tools" element={isAuthenticated ? <Tools /> : <Login />} />
-        <Route path="/contact" element={isAuthenticated ? <Contact /> : <Login />} />
-        <Route path="/about" element={isAuthenticated ? <About /> : <Login />} />
-        <Route path="/phishing-checker" element={isAuthenticated ? <Phishing /> : <Login />} />
-        <Route path="/dark-web" element={isAuthenticated ? <DarkWeb /> : <Login />} />
+        <Route
+          path="/tools"
+          element={isAuthenticated ? <Tools /> : <Login />}
+        />
+        <Route
+          path="/contact"
+          element={isAuthenticated ? <Contact /> : <Login />}
+        />
+        <Route
+          path="/about"
+          element={isAuthenticated ? <About /> : <Login />}
+        />
+        <Route
+          path="/phishing-checker"
+          element={isAuthenticated ? <Phishing /> : <Login />}
+        />
+        <Route
+          path="/dark-web"
+          element={isAuthenticated ? <DarkWeb /> : <Login />}
+        />
 
-        {/* Admin Routes */}
         <Route path="/admin" element={isAdmin ? <Admin /> : <Notfound />}>
           <Route index element={<Users />} />
           <Route path="contacts" element={<ContactInfo />} />
         </Route>
 
-        {/* Authentication Routes */}
+        {/* Authentication */}
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
 
