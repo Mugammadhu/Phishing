@@ -1,0 +1,9 @@
+.bg-gray-750 {
+    background-color: #2d3748;
+}
+
+.truncate {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
