@@ -1,70 +1,148 @@
 /* Custom styles for Urls.jsx */
 .card-custom {
-  transition: transform 0.3s, box-shadow 0.3s;
-  border-radius: 10px;
-  overflow: hidden;
+    transition: transform 0.3s, box-shadow 0.3s;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid #00f0ff;
 }
 
 .card-custom:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+    transform: translateY(-8px);
+    box-shadow: 0 15px 30px rgba(0, 240, 255, 0.3);
 }
 
 .url-truncate {
-  max-width: 200px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+    max-width: 180px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .word-wrap {
-  word-break: break-all;
+    word-break: break-all;
 }
 
-.text-gradient {
-  background: linear-gradient(90deg, #0d6efd, #6610f2);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+.text-neon-gradient {
+    background: linear-gradient(90deg, #00f0ff, #ff00ff);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
 }
 
-.bg-gradient-primary {
-  background: linear-gradient(90deg, #0d6efd, #6610f2);
+.bg-blue-gray {
+    background: linear-gradient(135deg, #0a0f1a 0%, #1a2530 100%);
 }
 
-.bg-gradient-danger {
-  background: linear-gradient(90deg, #dc3545, #b02a37);
+.bg-container {
+    background: linear-gradient(135deg, #151a25 0%, #252a35 100%);
 }
 
-.btn-view {
-  background: linear-gradient(90deg, #0d6efd, #6610f2);
-  color: white;
-  border: none;
-  transition: background 0.3s;
+.bg-neon-card-even {
+    background: linear-gradient(135deg, #1f2a3a 0%, #2a3a4a 100%);
 }
 
-.btn-view:hover {
-  background: linear-gradient(90deg, #6610f2, #0d6efd);
+.bg-neon-card-odd {
+    background: linear-gradient(135deg, #2a3a4a 0%, #1f2a3a 100%);
 }
 
-.btn-copy {
-  background: linear-gradient(90deg, #6f42c1, #a855f7);
-  color: white;
-  border: none;
-  transition: background 0.3s;
+.bg-neon-blue {
+    background: linear-gradient(90deg, #00f0ff, #007bff);
 }
 
-.btn-copy:hover {
-  background: linear-gradient(90deg, #a855f7, #6f42c1);
+.text-neon-blue {
+    color: #00f0ff;
+    text-shadow: 0 0 5px #00f0ff, 0 0 10px #00f0ff;
 }
 
-.btn-delete {
-  background: linear-gradient(90deg, #dc3545, #b02a37);
-  color: white;
-  border: none;
-  transition: background 0.3s;
+.border-neon-blue {
+    border-color: #00f0ff !important;
+    box-shadow: 0 0 5px #00f0ff;
 }
 
-.btn-delete:hover {
-  background: linear-gradient(90deg, #b02a37, #dc3545);
+.bg-neon-red {
+    background: linear-gradient(90deg, #ff0040, #dc3545);
+}
+
+.text-neon-red {
+    color: #ff0040;
+    text-shadow: 0 0 5px #ff0040, 0 0 10px #ff0040;
+}
+
+.border-neon-red {
+    border-color: #ff0040 !important;
+    box-shadow: 0 0 5px #ff0040;
+}
+
+.text-neon-green {
+    color: #00ff80;
+    text-shadow: 0 0 5px #00ff80, 0 0 10px #00ff80;
+}
+
+.neon-glow {
+    text-shadow: 0 0 10px #00ff80, 0 0 20px #00ff80, 0 0 30px #00ff80;
+}
+
+.btn-neon-blue {
+    background: linear-gradient(90deg, #00f0ff, #007bff);
+    color: white;
+    border: none;
+    transition: background 0.3s, box-shadow 0.3s;
+}
+
+.btn-neon-blue:hover {
+    background: linear-gradient(90deg, #007bff, #00f0ff);
+    box-shadow: 0 0 10px #00f0ff;
+}
+
+.btn-neon-purple {
+    background: linear-gradient(90deg, #ff00ff, #6f42c1);
+    color: white;
+    border: none;
+    transition: background 0.3s, box-shadow 0.3s;
+}
+
+.btn-neon-purple:hover {
+    background: linear-gradient(90deg, #6f42c1, #ff00ff);
+    box-shadow: 0 0 10px #ff00ff;
+}
+
+.btn-neon-red {
+    background: linear-gradient(90deg, #ff0040, #dc3545);
+    color: white;
+    border: none;
+    transition: background 0.3s, box-shadow 0.3s;
+}
+
+.btn-neon-red:hover {
+    background: linear-gradient(90deg, #dc3545, #ff0040);
+    box-shadow: 0 0 10px #ff0040;
+}
+
+.btn-neon-green {
+    background: linear-gradient(90deg, #00ff80, #28a745);
+    color: white;
+    border: none;
+    transition: background 0.3s, box-shadow 0.3s;
+}
+
+.btn-neon-green:hover {
+    background: linear-gradient(90deg, #28a745, #00ff80);
+    box-shadow: 0 0 10px #00ff80;
+}
+
+.btn-outline-neon {
+    border: 1px solid #00f0ff;
+    color: #00f0ff;
+    background: transparent;
+    transition: background 0.3s, box-shadow 0.3s;
+}
+
+.btn-outline-neon:hover {
+    background: #00f0ff;
+    color: #1a1a1a;
+    box-shadow: 0 0 10px #00f0ff;
+}
+
+.shadow-neon {
+    box-shadow: 0 0 10px rgba(0, 240, 255, 0.5), 0 0 20px rgba(0, 240, 255, 0.3);
 }
