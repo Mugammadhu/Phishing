@@ -1,18 +1,17 @@
 /* Custom styles for Urls.jsx */
 .card-custom {
     transition: transform 0.3s, box-shadow 0.3s;
-    border-radius: 12px;
+    border-radius: 8px;
     overflow: hidden;
-    border: 1px solid #00f0ff;
 }
 
 .card-custom:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 15px 30px rgba(0, 240, 255, 0.3);
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
 }
 
 .url-truncate {
-    max-width: 180px;
+    max-width: 100%;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -22,127 +21,93 @@
     word-break: break-all;
 }
 
-.text-neon-gradient {
-    background: linear-gradient(90deg, #00f0ff, #ff00ff);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
+/* Improved contrast for text */
+.card-body {
+    color: #333;
 }
 
-.bg-light-gray {
-    background: linear-gradient(135deg, #f0f2f5 0%, #e8ecef 100%);
+/* Better spacing for card elements */
+.card-header h5 {
+    font-size: 1rem;
 }
 
-.bg-container-light {
-    background: linear-gradient(135deg, #e0e4e8 0%, #d8dce0 100%);
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .card-footer .btn {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.8rem;
+    }
 }
 
-.bg-dark-card-even {
-    background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+/* Modal improvements */
+.modal-content {
+    border-radius: 10px;
 }
 
-.bg-dark-card-odd {
-    background: linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%);
+.modal-header {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
 }
 
-.bg-neon-blue {
-    background: linear-gradient(90deg, #00f0ff, #007bff);
+.modal-footer {
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
 }
 
-.text-neon-blue {
-    color: #00f0ff;
-    text-shadow: 0 0 5px #00f0ff, 0 0 10px #00f0ff;
+/* Better badge styling */
+.badge {
+    font-weight: 500;
+    padding: 0.35em 0.65em;
 }
 
-.border-neon-blue {
-    border-color: #00f0ff !important;
-    box-shadow: 0 0 5px #00f0ff;
+/* Improved input group styling */
+.input-group-text {
+    transition: all 0.3s;
 }
 
-.bg-neon-red {
-    background: linear-gradient(90deg, #ff0040, #dc3545);
+.form-control:focus, .form-select:focus {
+    border-color: #86b7fe;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
 }
 
-.text-neon-red {
-    color: #ff0040;
-    text-shadow: 0 0 5px #ff0040, 0 0 10px #ff0040;
+/* Pagination styling */
+.pagination .page-item.active .page-link {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
 }
 
-.border-neon-red {
-    border-color: #ff0040 !important;
-    box-shadow: 0 0 5px #ff0040;
+.pagination .page-link {
+    color: #0d6efd;
 }
 
-.text-neon-green {
-    color: #00ff80;
-    text-shadow: 0 0 5px #00ff80, 0 0 10px #00ff80;
-}
-
-.neon-glow {
-    text-shadow: 0 0 10px #00ff80, 0 0 20px #00ff80, 0 0 30px #00ff80;
-}
-
-.btn-neon-blue {
-    background: linear-gradient(90deg, #00f0ff, #007bff);
-    color: white;
+/* Toast notification improvements */
+.alert {
     border: none;
-    transition: background 0.3s, box-shadow 0.3s;
+    border-left: 4px solid;
 }
 
-.btn-neon-blue:hover {
-    background: linear-gradient(90deg, #007bff, #00f0ff);
-    box-shadow: 0 0 10px #00f0ff;
+.alert-success {
+    border-left-color: #198754;
 }
 
-.btn-neon-purple {
-    background: linear-gradient(90deg, #ff00ff, #6f42c1);
+.alert-danger {
+    border-left-color: #dc3545;
+}
+
+.alert-info {
+    border-left-color: #0dcaf0;
+}
+
+/* Button hover effects */
+.btn-outline-primary:hover, 
+.btn-outline-secondary:hover, 
+.btn-outline-danger:hover {
     color: white;
-    border: none;
-    transition: background 0.3s, box-shadow 0.3s;
 }
 
-.btn-neon-purple:hover {
-    background: linear-gradient(90deg, #6f42c1, #ff00ff);
-    box-shadow: 0 0 10px #ff00ff;
+/* Card status indicators */
+.card-header.bg-primary {
+    background-color: #0d6efd !important;
 }
 
-.btn-neon-red {
-    background: linear-gradient(90deg, #ff0040, #dc3545);
-    color: white;
-    border: none;
-    transition: background 0.3s, box-shadow 0.3s;
-}
-
-.btn-neon-red:hover {
-    background: linear-gradient(90deg, #dc3545, #ff0040);
-    box-shadow: 0 0 10px #ff0040;
-}
-
-.btn-neon-green {
-    background: linear-gradient(90deg, #00ff80, #28a745);
-    color: white;
-    border: none;
-    transition: background 0.3s, box-shadow 0.3s;
-}
-
-.btn-neon-green:hover {
-    background: linear-gradient(90deg, #28a745, #00ff80);
-    box-shadow: 0 0 10px #00ff80;
-}
-
-.btn-outline-neon {
-    border: 1px solid #00f0ff;
-    color: #00f0ff;
-    background: transparent;
-    transition: background 0.3s, box-shadow 0.3s;
-}
-
-.btn-outline-neon:hover {
-    background: #00f0ff;
-    color: #0a0a0a;
-    box-shadow: 0 0 10px #00f0ff;
-}
-
-.shadow-neon {
-    box-shadow: 0 0 10px rgba(0, 240, 255, 0.5), 0 0 20px rgba(0, 240, 255, 0.3);
+.card-header.bg-danger {
+    background-color: #dc3545 !important;
 }

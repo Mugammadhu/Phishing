@@ -165,14 +165,14 @@ const Urls = () => {
                 animate={{ opacity: 1 }}
                 className="text-center my-5"
             >
-                <i className="bi bi-link-45deg bi-spin fs-3 text-neon-blue"></i>
-                <p className="mt-2 text-dark">Loading URLs...</p>
+                <i className="bi bi-link-45deg bi-spin fs-3 text-primary"></i>
+                <p className="mt-2 text-muted">Loading URLs...</p>
             </motion.div>
         );
     }
 
     return (
-        <div className="container-fluid p-4 bg-light-gray text-dark min-vh-100">
+        <div className="container-fluid p-4 bg-light min-vh-100">
             {/* Toast Notification */}
             <AnimatePresence>
                 {toast.show && (
@@ -182,7 +182,7 @@ const Urls = () => {
                         exit={{ opacity: 0, y: -50 }}
                         className={`position-fixed top-0 end-0 m-3 alert alert-${
                             toast.type === "success" ? "success" : "danger"
-                        } d-flex align-items-center shadow-neon`}
+                        } d-flex align-items-center shadow`}
                         style={{ zIndex: 1050 }}
                     >
                         <i
@@ -204,21 +204,21 @@ const Urls = () => {
                 initial={{ y: -20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ duration: 0.5 }}
-                className="mb-4 bg-container-light p-4 rounded"
+                className="mb-4 bg-white p-4 rounded shadow-sm"
             >
                 <div className="d-flex flex-column flex-md-row justify-content-between align-items-center gap-3 mb-4">
-                    <h2 className="m-0 text-neon-gradient">
-                        <i className="bi bi-link-45deg me-2"></i>
+                    <h2 className="m-0 text-dark">
+                        <i className="bi bi-link-45deg me-2 text-primary"></i>
                         Phishing URL Records
                     </h2>
                     <div className="d-flex gap-3 flex-wrap">
                         <div className="input-group" style={{ maxWidth: "300px" }}>
-                            <span className="input-group-text bg-dark border-neon-blue">
-                                <i className="bi bi-search text-neon-blue"></i>
+                            <span className="input-group-text bg-light">
+                                <i className="bi bi-search text-secondary"></i>
                             </span>
                             <input
                                 type="text"
-                                className="form-control bg-white text-dark border-neon-blue"
+                                className="form-control bg-white"
                                 placeholder="Search URLs or status..."
                                 value={searchTerm}
                                 onChange={(e) => {
@@ -228,7 +228,7 @@ const Urls = () => {
                             />
                         </div>
                         <select
-                            className="form-select bg-white text-dark border-neon-blue"
+                            className="form-select bg-white"
                             style={{ maxWidth: "150px" }}
                             value={statusFilter}
                             onChange={(e) => {
@@ -241,7 +241,7 @@ const Urls = () => {
                             <option value="danger">Danger</option>
                         </select>
                         <motion.button
-                            className="btn btn-neon-blue"
+                            className="btn btn-outline-primary"
                             onClick={fetchUrls}
                             whileHover={{ scale: 1.05 }}
                             whileTap={{ scale: 0.95 }}
@@ -250,7 +250,7 @@ const Urls = () => {
                             Refresh
                         </motion.button>
                         <motion.button
-                            className="btn btn-neon-green"
+                            className="btn btn-primary"
                             onClick={exportToCSV}
                             whileHover={{ scale: 1.05 }}
                             whileTap={{ scale: 0.95 }}
@@ -260,8 +260,8 @@ const Urls = () => {
                         </motion.button>
                     </div>
                 </div>
-                <div className="alert alert-info d-flex align-items-center bg-white border-neon-blue text-dark shadow-neon">
-                    <i className="bi bi-info-circle-fill me-2 fs-5 text-neon-blue"></i>
+                <div className="alert alert-info d-flex align-items-center bg-light border-start border-primary border-5">
+                    <i className="bi bi-info-circle-fill me-2 fs-5 text-primary"></i>
                     <div>
                         Showing <strong>{filteredUrls.length}</strong> of <strong>{urls.length}</strong> URLs
                     </div>
@@ -280,37 +280,28 @@ const Urls = () => {
                                 transition={{ delay: index * 0.1, type: "spring" }}
                                 className="col-md-6 col-lg-4"
                             >
-                                <div
-                                    className={`card h-100 shadow border-neon card-custom ${
-                                        index % 2 === 0
-                                            ? "bg-dark-card-even"
-                                            : "bg-dark-card-odd"
-                                    }`}
-                                >
-                                    <div className="card-header bg-neon-blue text-white d-flex justify-content-between align-items-center">
+                                <div className="card h-100 shadow-sm border-0">
+                                    <div className="card-header bg-primary text-white d-flex justify-content-between align-items-center">
                                         <h5 className="mb-0">
                                             <i className="bi bi-link-45deg me-2"></i>
                                             URL #{(currentPage - 1) * urlsPerPage + index + 1}
                                         </h5>
-                                        <span className="badge bg-dark text-neon-blue">
+                                        <span className="badge bg-white text-primary">
                                             ID: {url._id.slice(-6)}
                                         </span>
                                     </div>
-                                    <div className="card-body text-light">
+                                    <div className="card-body">
                                         <div className="mb-3">
                                             <h6 className="text-muted d-flex align-items-center">
                                                 <i className="bi bi-link-45deg me-2"></i>
                                                 URL
                                             </h6>
-                                            <p
-                                                className="mb-0 url-truncate"
-                                                title={url.url}
-                                            >
+                                            <p className="mb-0 url-truncate" title={url.url}>
                                                 <a
                                                     href={url.url}
                                                     target="_blank"
                                                     rel="noopener noreferrer"
-                                                    className="text-neon-blue"
+                                                    className="text-primary"
                                                 >
                                                     {url.url}
                                                 </a>
@@ -321,8 +312,8 @@ const Urls = () => {
                                                 <i
                                                     className={`bi ${
                                                         url.isSafe
-                                                            ? "bi-shield-check"
-                                                            : "bi-exclamation-triangle"
+                                                            ? "bi-shield-check text-success"
+                                                            : "bi-exclamation-triangle text-danger"
                                                     } me-2`}
                                                 ></i>
                                                 Status
@@ -330,8 +321,8 @@ const Urls = () => {
                                             <p
                                                 className={`mb-0 fw-semibold ${
                                                     url.isSafe
-                                                        ? "text-neon-green neon-glow"
-                                                        : "text-neon-red"
+                                                        ? "text-success"
+                                                        : "text-danger"
                                                 }`}
                                             >
                                                 {url.isSafe ? "Safe" : "Danger"}
@@ -339,15 +330,15 @@ const Urls = () => {
                                         </div>
                                         <div>
                                             <h6 className="text-muted d-flex align-items-center">
-                                                <i className="bi bi-graph-up me-2"></i>
+                                                <i className="bi bi-graph-up me-2 text-info"></i>
                                                 Confidence
                                             </h6>
                                             <p className="mb-0">{url.confidence.toFixed(2)}%</p>
                                         </div>
                                     </div>
-                                    <div className="card-footer bg-dark d-flex justify-content-between">
+                                    <div className="card-footer bg-light d-flex justify-content-between">
                                         <motion.button
-                                            className="btn btn-sm btn-neon-blue"
+                                            className="btn btn-sm btn-outline-primary"
                                             onClick={() => viewDetails(url)}
                                             whileHover={{ scale: 1.05 }}
                                             whileTap={{ scale: 0.95 }}
@@ -356,7 +347,7 @@ const Urls = () => {
                                             View
                                         </motion.button>
                                         <motion.button
-                                            className="btn btn-sm btn-neon-purple"
+                                            className="btn btn-sm btn-outline-secondary"
                                             onClick={() => copyToClipboard(url.url)}
                                             whileHover={{ scale: 1.05 }}
                                             whileTap={{ scale: 0.95 }}
@@ -365,7 +356,7 @@ const Urls = () => {
                                             Copy
                                         </motion.button>
                                         <motion.button
-                                            className="btn btn-sm btn-neon-red"
+                                            className="btn btn-sm btn-outline-danger"
                                             onClick={() => confirmDelete(url)}
                                             whileHover={{ scale: 1.05 }}
                                             whileTap={{ scale: 0.95 }}
@@ -383,7 +374,7 @@ const Urls = () => {
                             animate={{ scale: 1, opacity: 1 }}
                             className="col-12 text-center py-5 text-muted"
                         >
-                            <i className="bi bi-link-45deg fs-1 text-neon-blue"></i>
+                            <i className="bi bi-link-45deg fs-1 text-primary"></i>
                             <p className="mt-3">
                                 {searchTerm || statusFilter !== "all"
                                     ? "No matching URLs found"
@@ -391,7 +382,7 @@ const Urls = () => {
                             </p>
                             {(searchTerm || statusFilter !== "all") && (
                                 <button
-                                    className="btn btn-outline-neon mt-2"
+                                    className="btn btn-outline-primary mt-2"
                                     onClick={() => {
                                         setSearchTerm("");
                                         setStatusFilter("all");
@@ -418,7 +409,7 @@ const Urls = () => {
                         <ul className="pagination">
                             <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
                                 <button
-                                    className="page-link bg-white text-neon-blue border-neon-blue"
+                                    className="page-link"
                                     onClick={() => setCurrentPage(currentPage - 1)}
                                 >
                                     Previous
@@ -430,7 +421,7 @@ const Urls = () => {
                                     className={`page-item ${currentPage === i + 1 ? "active" : ""}`}
                                 >
                                     <button
-                                        className="page-link bg-white text-neon-blue border-neon-blue"
+                                        className="page-link"
                                         onClick={() => setCurrentPage(i + 1)}
                                     >
                                         {i + 1}
@@ -443,7 +434,7 @@ const Urls = () => {
                                 }`}
                             >
                                 <button
-                                    className="page-link bg-white text-neon-blue border-neon-blue"
+                                    className="page-link"
                                     onClick={() => setCurrentPage(currentPage + 1)}
                                 >
                                     Next
@@ -461,11 +452,11 @@ const Urls = () => {
                 className="d-flex justify-content-end mt-3"
             >
                 <div className="input-group" style={{ maxWidth: "300px" }}>
-                    <span className="input-group-text bg-white border-neon-blue text-neon-blue">
+                    <span className="input-group-text bg-light">
                         Sort by
                     </span>
                     <select
-                        className="form-select bg-white text-dark border-neon-blue"
+                        className="form-select"
                         value={sortField}
                         onChange={(e) => handleSort(e.target.value)}
                     >
@@ -475,7 +466,7 @@ const Urls = () => {
                         <option value="createdAt">Created At</option>
                     </select>
                     <button
-                        className="btn btn-outline-neon"
+                        className="btn btn-outline-secondary"
                         onClick={() => handleSort(sortField)}
                     >
                         <i
@@ -493,7 +484,7 @@ const Urls = () => {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     className="modal fade show d-block"
-                    style={{ backgroundColor: "rgba(0,0,0,0.8)" }}
+                    style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
                 >
                     <motion.div
                         initial={{ scale: 0.8, opacity: 0 }}
@@ -501,8 +492,8 @@ const Urls = () => {
                         transition={{ type: "spring", stiffness: 100 }}
                         className="modal-dialog modal-dialog-centered modal-lg"
                     >
-                        <div className="modal-content bg-dark text-light border-neon-blue shadow-neon">
-                            <div className="modal-header bg-neon-blue text-white border-0">
+                        <div className="modal-content border-0 shadow">
+                            <div className="modal-header bg-primary text-white">
                                 <h5 className="modal-title">
                                     <i className="bi bi-link-45deg me-2"></i>
                                     URL Details
@@ -525,7 +516,7 @@ const Urls = () => {
                                                 href={selectedUrl.url}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
-                                                className="text-neon-blue"
+                                                className="text-primary"
                                             >
                                                 {selectedUrl.url}
                                             </a>
@@ -536,8 +527,8 @@ const Urls = () => {
                                             <i
                                                 className={`bi ${
                                                     selectedUrl.isSafe
-                                                        ? "bi-shield-check"
-                                                        : "bi-exclamation-triangle"
+                                                        ? "bi-shield-check text-success"
+                                                        : "bi-exclamation-triangle text-danger"
                                                 } me-2`}
                                             ></i>
                                             Status
@@ -545,9 +536,9 @@ const Urls = () => {
                                         <p
                                             className={`fs-5 fw-semibold ${
                                                 selectedUrl.isSafe
-                                                    ? "text-neon-green neon-glow"
-                                                    : "text-neon-red"
-                                                }`}
+                                                    ? "text-success"
+                                                    : "text-danger"
+                                            }`}
                                         >
                                             {selectedUrl.isSafe ? "Safe" : "Danger"}
                                         </p>
@@ -555,7 +546,7 @@ const Urls = () => {
                                 </div>
                                 <div className="mb-3">
                                     <h6 className="text-muted">
-                                        <i className="bi bi-graph-up me-2"></i>
+                                        <i className="bi bi-graph-up me-2 text-info"></i>
                                         Confidence
                                     </h6>
                                     <p>{selectedUrl.confidence.toFixed(2)}%</p>
@@ -577,10 +568,10 @@ const Urls = () => {
                                     </div>
                                 </div>
                             </div>
-                            <div className="modal-footer bg-dark border-0">
+                            <div className="modal-footer">
                                 <motion.button
                                     type="button"
-                                    className="btn btn-outline-neon"
+                                    className="btn btn-outline-secondary"
                                     onClick={() => setShowDetailsModal(false)}
                                     whileHover={{ scale: 1.05 }}
                                     whileTap={{ scale: 0.95 }}
@@ -589,7 +580,7 @@ const Urls = () => {
                                     Close
                                 </motion.button>
                                 <motion.button
-                                    className="btn btn-neon-purple"
+                                    className="btn btn-outline-primary"
                                     onClick={() => copyToClipboard(selectedUrl.url)}
                                     whileHover={{ scale: 1.05 }}
                                     whileTap={{ scale: 0.95 }}
@@ -601,7 +592,7 @@ const Urls = () => {
                                     href={selectedUrl.url}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="btn btn-neon-green"
+                                    className="btn btn-primary"
                                 >
                                     <i className="bi bi-box-arrow-up-right me-1"></i>
                                     Visit URL
@@ -618,21 +609,16 @@ const Urls = () => {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     className="modal fade show d-block"
-                    style={{ backgroundColor: "rgba(0,0,0,0.8)" }}
+                    style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
                 >
                     <motion.div
-                        initial={{ y: -50, opacity: 0, rotate: 0 }}
-                        animate={{
-                            y: 0,
-                            opacity: 1,
-                            rotate: [0, 5, -5, 0],
-                            transition: { rotate: { repeat: 1, duration: 0.3 } },
-                        }}
+                        initial={{ y: -50, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
                         transition={{ type: "spring", stiffness: 100 }}
                         className="modal-dialog modal-dialog-centered"
                     >
-                        <div className="modal-content bg-dark text-light border-neon-red shadow-neon">
-                            <div className="modal-header bg-neon-red text-white border-0">
+                        <div className="modal-content border-0 shadow">
+                            <div className="modal-header bg-danger text-white">
                                 <h5 className="modal-title">
                                     <i className="bi bi-exclamation-triangle-fill me-2"></i>
                                     Confirm Deletion
@@ -651,7 +637,7 @@ const Urls = () => {
                                     </strong>
                                     ?
                                 </p>
-                                <div className="alert alert-warning d-flex align-items-center bg-warning-subtle text-dark shadow-neon">
+                                <div className="alert alert-warning d-flex align-items-center">
                                     <i className="bi bi-info-circle-fill me-2 fs-5"></i>
                                     <div>
                                         This action cannot be undone. All URL data will be permanently
@@ -659,10 +645,10 @@ const Urls = () => {
                                     </div>
                                 </div>
                             </div>
-                            <div className="modal-footer bg-dark border-0">
+                            <div className="modal-footer">
                                 <motion.button
                                     type="button"
-                                    className="btn btn-outline-neon"
+                                    className="btn btn-outline-secondary"
                                     onClick={() => setShowDeleteModal(false)}
                                     whileHover={{ scale: 1.05 }}
                                     whileTap={{ scale: 0.95 }}
@@ -672,7 +658,7 @@ const Urls = () => {
                                 </motion.button>
                                 <motion.button
                                     type="button"
-                                    className="btn btn-neon-red"
+                                    className="btn btn-danger"
                                     onClick={handleDelete}
                                     whileHover={{ scale: 1.05 }}
                                     whileTap={{ scale: 0.95 }}
