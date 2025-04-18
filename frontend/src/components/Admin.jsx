@@ -2,7 +2,7 @@ import { Link, Outlet, useLocation } from 'react-router-dom';
 
 const Admin = () => {
   const location = useLocation();
-  const activeTab = location.pathname.includes('contacts') ? 'contacts' : 'users';
+  const activeTab = location.pathname.includes('contacts') ? 'contacts' : location.pathname.includes('users') ? 'users' : 'urls';
 
   return (
     <div className="container mt-4">

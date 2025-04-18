@@ -1,12 +1,70 @@
-.hover-effect {
-    transition: transform 0.2s, box-shadow 0.2s;
+/* Custom styles for Urls.jsx */
+.card-custom {
+  transition: transform 0.3s, box-shadow 0.3s;
+  border-radius: 10px;
+  overflow: hidden;
 }
 
-.hover-effect:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+.card-custom:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
 }
 
-.text-truncate {
-    max-width: 200px;
+.url-truncate {
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.word-wrap {
+  word-break: break-all;
+}
+
+.text-gradient {
+  background: linear-gradient(90deg, #0d6efd, #6610f2);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.bg-gradient-primary {
+  background: linear-gradient(90deg, #0d6efd, #6610f2);
+}
+
+.bg-gradient-danger {
+  background: linear-gradient(90deg, #dc3545, #b02a37);
+}
+
+.btn-view {
+  background: linear-gradient(90deg, #0d6efd, #6610f2);
+  color: white;
+  border: none;
+  transition: background 0.3s;
+}
+
+.btn-view:hover {
+  background: linear-gradient(90deg, #6610f2, #0d6efd);
+}
+
+.btn-copy {
+  background: linear-gradient(90deg, #6f42c1, #a855f7);
+  color: white;
+  border: none;
+  transition: background 0.3s;
+}
+
+.btn-copy:hover {
+  background: linear-gradient(90deg, #a855f7, #6f42c1);
+}
+
+.btn-delete {
+  background: linear-gradient(90deg, #dc3545, #b02a37);
+  color: white;
+  border: none;
+  transition: background 0.3s;
+}
+
+.btn-delete:hover {
+  background: linear-gradient(90deg, #b02a37, #dc3545);
 }
