@@ -20,7 +20,6 @@ import axios from "axios";
 const App = () => {
     const [isAuthenticated, setIsAuthenticated] = useState(null);
     const [isAdmin, setIsAdmin] = useState(localStorage.getItem("isAdmin") === "true");
-    const [authError, setAuthError] = useState("");
     const navigate = useNavigate();
     const location = useLocation();
     const [authToken, setAuthToken] = useState(localStorage.getItem("authToken"));
@@ -35,7 +34,6 @@ const App = () => {
                 if (token && ["/login", "/signup"].includes(location.pathname)) {
                     setIsAuthenticated(true);
                     setIsAdmin(storedIsAdmin);
-                    setAuthError("");
                     return;
                 }
                 if (!token && !["/login", "/signup"].includes(location.pathname)) {
@@ -58,7 +56,6 @@ const App = () => {
                     const isAdminStatus = response.data.isAdmin || storedIsAdmin || false;
                     setIsAdmin(isAdminStatus);
                     localStorage.setItem("isAdmin", isAdminStatus.toString());
-                    setAuthError("");
                 } else {
                     throw new Error(response.data.error || "Authentication failed");
                 }
@@ -164,7 +161,6 @@ const App = () => {
     console.log("App: Rendering routes, isAuthenticated:", isAuthenticated, "isAdmin:", isAdmin); // Debug
     return (
         <div>
-            {authError && <p style={{ color: "red", textAlign: "center" }}>{authError}</p>}
             <Navbar isAdmin={isAdmin} />
             <Routes>
                 <Route path="/login" element={<Login />} />

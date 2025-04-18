@@ -1,4 +1,5 @@
-import { Link, useNavigate, useLocation } from "react-router-dom";
+/* eslint-disable react/prop-types */
+import { Link, useNavigate } from "react-router-dom";
 import "../styles/navbar.css";
 import { useState, useEffect } from "react";
 import { useCookies } from "react-cookie";
@@ -9,9 +10,8 @@ const Navbar = ({ isAdmin: propIsAdmin }) => {
     const [cookies, , removeCookie] = useCookies(["authToken"]);
     const [showSpinner, setShowSpinner] = useState(false);
     const [isAdmin, setIsAdmin] = useState(propIsAdmin || localStorage.getItem("isAdmin") === "true");
-    const [authError, setAuthError] = useState("");
     const navigate = useNavigate();
-    const location = useLocation();
+
 
     useEffect(() => {
         console.log("Navbar: propIsAdmin:", propIsAdmin, "localStorage isAdmin:", localStorage.getItem("isAdmin")); // Debug
@@ -60,7 +60,6 @@ const Navbar = ({ isAdmin: propIsAdmin }) => {
             const isAdminStatus = response.data?.isAdmin || storedIsAdmin || false;
             setIsAdmin(isAdminStatus);
             localStorage.setItem("isAdmin", isAdminStatus.toString());
-            setAuthError("");
         } catch (error) {
             console.error("Navbar: Auth check failed:", error.message, error.response?.data); // Debug
             if (retries > 0) {
@@ -70,7 +69,6 @@ const Navbar = ({ isAdmin: propIsAdmin }) => {
             }
             const storedIsAdmin = localStorage.getItem("isAdmin") === "true";
             setIsAdmin(storedIsAdmin);
-            setAuthError(storedIsAdmin ? "" : "Failed to verify admin status. Please try logging in again.");
         }
     };
 
@@ -80,7 +78,6 @@ const Navbar = ({ isAdmin: propIsAdmin }) => {
         } else {
             setIsAdmin(false);
             localStorage.setItem("isAdmin", "false");
-            setAuthError("No authentication token found.");
         }
     }, [cookies.authToken]);
 
@@ -93,7 +90,6 @@ const Navbar = ({ isAdmin: propIsAdmin }) => {
         }
 
         setShowSpinner(true);
-        setAuthError("");
 
         try {
             const headers = {
@@ -117,7 +113,6 @@ const Navbar = ({ isAdmin: propIsAdmin }) => {
             navigate("/login");
         } catch (error) {
             console.error("Logout failed:", error.message, error.response?.data); // Debug
-            setAuthError("Logout failed. Please try again.");
             removeCookie("authToken", { path: "/", sameSite: "none", secure: true });
             removeCookie("adminToken", { path: "/", sameSite: "none", secure: true });
             localStorage.removeItem("authToken");
@@ -132,7 +127,6 @@ const Navbar = ({ isAdmin: propIsAdmin }) => {
     return (
         <nav className="navbar">
             <h2>DarkShield</h2>
-            {authError && <p style={{ color: "red" }}>{authError}</p>}
             <ul>
                 <li>
                     <Link to="/" className={active===1?"active":""} onClick={() => setActive(1)}>Home</Link>
