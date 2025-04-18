@@ -1,18 +1,43 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import "../styles/navbar.css";
 import { useState, useEffect } from "react";
 import { useCookies } from "react-cookie";
 import axios from "axios";
 
-const Navbar = () => {
+const Navbar = ({ isAdmin: propIsAdmin }) => {
     const [active, setActive] = useState(1);
     const [cookies, , removeCookie] = useCookies(["authToken"]);
     const [showSpinner, setShowSpinner] = useState(false);
-    const [isAdmin, setIsAdmin] = useState(localStorage.getItem("isAdmin") === "true");
+    const [isAdmin, setIsAdmin] = useState(propIsAdmin || localStorage.getItem("isAdmin") === "true");
     const [authError, setAuthError] = useState("");
     const navigate = useNavigate();
+    const location = useLocation();
 
-    const verifyAuth = async (retries = 3, delay = 1500) => { // Increased retries and delay
+    useEffect(() => {
+        console.log("Navbar: propIsAdmin:", propIsAdmin, "localStorage isAdmin:", localStorage.getItem("isAdmin")); // Debug
+        if (propIsAdmin !== undefined) {
+            setIsAdmin(propIsAdmin);
+            localStorage.setItem("isAdmin", propIsAdmin.toString());
+        }
+    }, [propIsAdmin]);
+
+    useEffect(() => {
+        const checkIsAdmin = () => {
+            const storedIsAdmin = localStorage.getItem("isAdmin") === "true";
+            if (storedIsAdmin !== isAdmin) {
+                console.log("Navbar: isAdmin changed in localStorage:", storedIsAdmin); // Debug
+                setIsAdmin(storedIsAdmin);
+            }
+        };
+        window.addEventListener("storage", checkIsAdmin);
+        const interval = setInterval(checkIsAdmin, 500);
+        return () => {
+            window.removeEventListener("storage", checkIsAdmin);
+            clearInterval(interval);
+        };
+    }, [isAdmin]);
+
+    const verifyAuth = async (retries = 3, delay = 1500) => {
         try {
             const token = localStorage.getItem("authToken");
             const storedIsAdmin = localStorage.getItem("isAdmin") === "true";

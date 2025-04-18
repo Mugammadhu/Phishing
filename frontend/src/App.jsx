@@ -27,13 +27,12 @@ const App = () => {
 
     useEffect(() => {
         console.log("App: Current path:", location.pathname, "authToken:", authToken); // Debug
-        const verifyAuth = async (retries = 3, delay = 1500) => { // Increased retries and delay
+        const verifyAuth = async (retries = 3, delay = 1500) => {
             try {
                 const token = localStorage.getItem("authToken");
                 const storedIsAdmin = localStorage.getItem("isAdmin") === "true";
                 console.log("App: Token from localStorage:", token, "Stored isAdmin:", storedIsAdmin); // Debug
-                if (token && ["login", "/signup"].includes(location.pathname)) {
-                    // Assume authenticated if token exists on login/signup
+                if (token && ["/login", "/signup"].includes(location.pathname)) {
                     setIsAuthenticated(true);
                     setIsAdmin(storedIsAdmin);
                     setAuthError("");
@@ -72,7 +71,6 @@ const App = () => {
                 }
                 const token = localStorage.getItem("authToken");
                 if (token) {
-                    // Fallback to localStorage
                     setIsAuthenticated(true);
                     setIsAdmin(localStorage.getItem("isAdmin") === "true");
                     setAuthError("");
@@ -167,7 +165,7 @@ const App = () => {
     return (
         <div>
             {authError && <p style={{ color: "red", textAlign: "center" }}>{authError}</p>}
-            <Navbar />
+            <Navbar isAdmin={isAdmin} />
             <Routes>
                 <Route path="/login" element={<Login />} />
                 <Route path="/signup" element={<Signup />} />
