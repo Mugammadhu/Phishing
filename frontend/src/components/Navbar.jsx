@@ -9,21 +9,20 @@ const Navbar = () => {
     const [cookies, , removeCookie] = useCookies(["authToken"]);
     const [showSpinner, setShowSpinner] = useState(false);
     const [isAdmin, setIsAdmin] = useState(false);
-    const [authError, setAuthError] = useState(""); // New: Track auth errors
+    const [authError, setAuthError] = useState(""); // Track auth errors
     const navigate = useNavigate();
 
     const verifyAuth = async (retries = 2, delay = 1000) => {
         try {
             const token = localStorage.getItem("authToken");
             console.log("Navbar: Token from localStorage:", token); // Debug
-            if (!token) {
-                throw new Error("No token found");
-            }
             const headers = {
                 "Content-Type": "application/json",
                 Accept: "application/json",
-                Authorization: `Bearer ${token}`,
             };
+            if (token) {
+                headers["Authorization"] = `Bearer ${token}`;
+            }
             const response = await axios.get(`${import.meta.env.VITE_SERVER}/auth`, {
                 headers,
                 withCredentials: true,
@@ -98,7 +97,7 @@ const Navbar = () => {
     return (
         <nav className="navbar">
             <h2>DarkShield</h2>
-            {authError && <p style={{ color: "red" }}>{authError}</p>} {/* Display auth errors */}
+            {authError && <p style={{ color: "red" }}>{authError}</p>} {/* Display errors */}
             <ul>
                 <li>
                     <Link to="/" className={active===1?"active":""} onClick={() => setActive(1)}>Home</Link>
@@ -118,13 +117,11 @@ const Navbar = () => {
                     </li>
                 )}
             </ul>
-            <div>
-                <button onClick={handleLogout}>
-                    {showSpinner ? (
-                        <div className="spinner"></div>
-                    ) : "Logout"}
-                </button>
-            </div>
+            <button onClick={handleLogout}>
+                {showSpinner ? (
+                    <div className="spinner"></div>
+                ) : "Logout"}
+            </button>
         </nav>
     );
 };
