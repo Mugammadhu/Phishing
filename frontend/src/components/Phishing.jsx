@@ -23,7 +23,7 @@ function Phishing() {
     setLoading(true);
     try {
       setError(null);
-      const response = await axios.post(`${import.meta.env.VITE_SERVER}/check-url`, {
+      const response = await axios.post(`${import.meta.env.VITE_SERVER}/api/check-url`, {
         url,
       });
       setResult(response.data);
