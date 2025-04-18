@@ -147,7 +147,7 @@ app.get("/auth", (req, res) => {
 app.use("/api", urlRoutes);
 app.use("/users", userRoute);
 app.use("/contacts", ContactRoute);
-app.use('/url',urlDBRoutes);
+app.use('/urls',urlDBRoutes);
 
 // Contact form and email functionality
 app.post("/send", async (req, res) => {
