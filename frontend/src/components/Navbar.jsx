@@ -9,37 +9,46 @@ const Navbar = () => {
     const [cookies, , removeCookie] = useCookies(["authToken"]);
     const [showSpinner, setShowSpinner] = useState(false);
     const [isAdmin, setIsAdmin] = useState(false);
-    const [logoutError, setLogoutError] = useState(""); // New: Track logout errors
+    const [authError, setAuthError] = useState(""); // New: Track auth errors
     const navigate = useNavigate();
 
-    useEffect(() => {
-        const verifyAuth = async () => {
-            try {
-                const token = localStorage.getItem("authToken");
-                console.log("Navbar: Token from localStorage:", token); // Debug
-                const headers = {
-                    "Content-Type": "application/json",
-                    Accept: "application/json",
-                };
-                if (token) {
-                    headers["Authorization"] = `Bearer ${token}`;
-                }
-                const response = await axios.get(`${import.meta.env.VITE_SERVER}/auth`, {
-                    headers,
-                    withCredentials: true,
-                });
-                console.log("Navbar: Auth response:", response.data); // Debug
-                setIsAdmin(response.data?.isAdmin || false);
-            } catch (error) {
-                console.error("Navbar: Auth check failed:", error.message); // Debug
-                setIsAdmin(false);
+    const verifyAuth = async (retries = 2, delay = 1000) => {
+        try {
+            const token = localStorage.getItem("authToken");
+            console.log("Navbar: Token from localStorage:", token); // Debug
+            if (!token) {
+                throw new Error("No token found");
             }
-        };
+            const headers = {
+                "Content-Type": "application/json",
+                Accept: "application/json",
+                Authorization: `Bearer ${token}`,
+            };
+            const response = await axios.get(`${import.meta.env.VITE_SERVER}/auth`, {
+                headers,
+                withCredentials: true,
+            });
+            console.log("Navbar: Auth response:", response.data); // Debug
+            setIsAdmin(response.data?.isAdmin || false);
+            setAuthError("");
+        } catch (error) {
+            console.error("Navbar: Auth check failed:", error.message, error.response?.data); // Debug
+            if (retries > 0) {
+                console.log(`Navbar: Retrying auth check, ${retries} attempts left`); // Debug
+                await new Promise(resolve => setTimeout(resolve, delay));
+                return verifyAuth(retries - 1, delay);
+            }
+            setIsAdmin(false);
+            setAuthError("Failed to verify admin status. Please try logging in again.");
+        }
+    };
 
+    useEffect(() => {
         if (cookies.authToken || localStorage.getItem("authToken")) {
             verifyAuth();
         } else {
             setIsAdmin(false);
+            setAuthError("No authentication token found.");
         }
     }, [cookies.authToken]);
 
@@ -52,7 +61,7 @@ const Navbar = () => {
         }
 
         setShowSpinner(true);
-        setLogoutError(""); // Clear previous errors
+        setAuthError("");
 
         try {
             const headers = {
@@ -75,8 +84,7 @@ const Navbar = () => {
             navigate("/login");
         } catch (error) {
             console.error("Logout failed:", error.message, error.response?.data); // Debug
-            setLogoutError("Logout failed. Please try again."); // User feedback
-            // Clear tokens anyway to prevent stuck state
+            setAuthError("Logout failed. Please try again.");
             removeCookie("authToken", { path: "/", sameSite: "none", secure: true });
             removeCookie("adminToken", { path: "/", sameSite: "none", secure: true });
             localStorage.removeItem("authToken");
@@ -90,6 +98,7 @@ const Navbar = () => {
     return (
         <nav className="navbar">
             <h2>DarkShield</h2>
+            {authError && <p style={{ color: "red" }}>{authError}</p>} {/* Display auth errors */}
             <ul>
                 <li>
                     <Link to="/" className={active===1?"active":""} onClick={() => setActive(1)}>Home</Link>
@@ -110,7 +119,6 @@ const Navbar = () => {
                 )}
             </ul>
             <div>
-                {logoutError && <p style={{ color: "red" }}>{logoutError}</p>} {/* Display error */}
                 <button onClick={handleLogout}>
                     {showSpinner ? (
                         <div className="spinner"></div>

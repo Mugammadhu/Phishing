@@ -26,12 +26,15 @@ const Login = () => {
       console.log("Login response:", data); // Debug
 
       if (response.ok) {
+        if (!data.token) {
+          throw new Error("No token received from server");
+        }
         setSuccessMessage(data.message);
         setErrorMessage("");
         localStorage.setItem("authToken", data.token); // Store token
         console.log("Stored authToken:", data.token); // Debug
         setTimeout(() => {
-          navigate("/home"); // Navigate to /home
+          navigate("/home");
         }, 1000);
       } else if (response.status === 404) {
         setErrorMessage(data.error);
@@ -44,8 +47,9 @@ const Login = () => {
         setSuccessMessage("");
       }
     } catch (err) {
-      console.error("Login error:", err);
+      console.error("Login error:", err.message); // Debug
       setErrorMessage("Something went wrong. Please try again later.");
+      setSuccessMessage("");
     }
     setUser({ email: "", password: "" });
   };
