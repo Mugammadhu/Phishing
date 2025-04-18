@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
-import '../styles/navbar.css';
+import "../styles/navbar.css";
 import { useState, useEffect } from "react";
 import { useCookies } from "react-cookie";
 import axios from "axios";
@@ -9,22 +9,34 @@ const Navbar = () => {
     const [cookies, , removeCookie] = useCookies(["authToken"]);
     const [showSpinner, setShowSpinner] = useState(false);
     const [isAdmin, setIsAdmin] = useState(false);
+    const [logoutError, setLogoutError] = useState(""); // New: Track logout errors
     const navigate = useNavigate();
 
     useEffect(() => {
         const verifyAuth = async () => {
             try {
+                const token = localStorage.getItem("authToken");
+                console.log("Navbar: Token from localStorage:", token); // Debug
+                const headers = {
+                    "Content-Type": "application/json",
+                    Accept: "application/json",
+                };
+                if (token) {
+                    headers["Authorization"] = `Bearer ${token}`;
+                }
                 const response = await axios.get(`${import.meta.env.VITE_SERVER}/auth`, {
+                    headers,
                     withCredentials: true,
                 });
+                console.log("Navbar: Auth response:", response.data); // Debug
                 setIsAdmin(response.data?.isAdmin || false);
-            // eslint-disable-next-line no-unused-vars
             } catch (error) {
+                console.error("Navbar: Auth check failed:", error.message); // Debug
                 setIsAdmin(false);
             }
         };
-        
-        if (cookies.authToken) {
+
+        if (cookies.authToken || localStorage.getItem("authToken")) {
             verifyAuth();
         } else {
             setIsAdmin(false);
@@ -32,25 +44,44 @@ const Navbar = () => {
     }, [cookies.authToken]);
 
     const handleLogout = async () => {
-        if (!cookies.authToken) return;
+        const token = localStorage.getItem("authToken");
+        if (!cookies.authToken && !token) {
+            console.log("No tokens found, redirecting to /login"); // Debug
+            navigate("/login");
+            return;
+        }
+
         setShowSpinner(true);
-        
+        setLogoutError(""); // Clear previous errors
+
         try {
-            // Start both the logout request and the timer simultaneously
-            await Promise.all([
-                axios.post(
-                    `${import.meta.env.VITE_SERVER}/logout`, 
-                    {}, 
-                    { withCredentials: true }
-                ),
-                new Promise(resolve => setTimeout(resolve, 1500)) // 1.5 second delay
-            ]);
-            
-            removeCookie("authToken", { path: "/" });
+            const headers = {
+                "Content-Type": "application/json",
+                Accept: "application/json",
+            };
+            if (token) {
+                headers["Authorization"] = `Bearer ${token}`;
+            }
+            const response = await axios.post(
+                `${import.meta.env.VITE_SERVER}/logout`,
+                {},
+                { headers, withCredentials: true }
+            );
+            console.log("Logout response:", response.data); // Debug
+            removeCookie("authToken", { path: "/", sameSite: "none", secure: true });
+            removeCookie("adminToken", { path: "/", sameSite: "none", secure: true });
+            localStorage.removeItem("authToken");
             setIsAdmin(false);
             navigate("/login");
         } catch (error) {
-            console.error("Logout failed:", error);
+            console.error("Logout failed:", error.message, error.response?.data); // Debug
+            setLogoutError("Logout failed. Please try again."); // User feedback
+            // Clear tokens anyway to prevent stuck state
+            removeCookie("authToken", { path: "/", sameSite: "none", secure: true });
+            removeCookie("adminToken", { path: "/", sameSite: "none", secure: true });
+            localStorage.removeItem("authToken");
+            setIsAdmin(false);
+            navigate("/login");
         } finally {
             setShowSpinner(false);
         }
@@ -78,11 +109,14 @@ const Navbar = () => {
                     </li>
                 )}
             </ul>
-            <button onClick={handleLogout}>
-                {showSpinner ? (
-                    <div className="spinner"></div>
-                ) : "Logout"}
-            </button>
+            <div>
+                {logoutError && <p style={{ color: "red" }}>{logoutError}</p>} {/* Display error */}
+                <button onClick={handleLogout}>
+                    {showSpinner ? (
+                        <div className="spinner"></div>
+                    ) : "Logout"}
+                </button>
+            </div>
         </nav>
     );
 };
