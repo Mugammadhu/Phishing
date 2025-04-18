@@ -166,13 +166,13 @@ const Urls = () => {
                 className="text-center my-5"
             >
                 <i className="bi bi-link-45deg bi-spin fs-3 text-neon-blue"></i>
-                <p className="mt-2 text-light">Loading URLs...</p>
+                <p className="mt-2 text-dark">Loading URLs...</p>
             </motion.div>
         );
     }
 
     return (
-        <div className="container-fluid p-4 bg-blue-gray text-light min-vh-100">
+        <div className="container-fluid p-4 bg-light-gray text-dark min-vh-100">
             {/* Toast Notification */}
             <AnimatePresence>
                 {toast.show && (
@@ -204,7 +204,7 @@ const Urls = () => {
                 initial={{ y: -20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ duration: 0.5 }}
-                className="mb-4 bg-container p-4 rounded"
+                className="mb-4 bg-container-light p-4 rounded"
             >
                 <div className="d-flex flex-column flex-md-row justify-content-between align-items-center gap-3 mb-4">
                     <h2 className="m-0 text-neon-gradient">
@@ -218,7 +218,7 @@ const Urls = () => {
                             </span>
                             <input
                                 type="text"
-                                className="form-control bg-dark text-light border-neon-blue"
+                                className="form-control bg-white text-dark border-neon-blue"
                                 placeholder="Search URLs or status..."
                                 value={searchTerm}
                                 onChange={(e) => {
@@ -228,7 +228,7 @@ const Urls = () => {
                             />
                         </div>
                         <select
-                            className="form-select bg-dark text-light border-neon-blue"
+                            className="form-select bg-white text-dark border-neon-blue"
                             style={{ maxWidth: "150px" }}
                             value={statusFilter}
                             onChange={(e) => {
@@ -260,7 +260,7 @@ const Urls = () => {
                         </motion.button>
                     </div>
                 </div>
-                <div className="alert alert-info d-flex align-items-center bg-dark border-neon-blue text-light shadow-neon">
+                <div className="alert alert-info d-flex align-items-center bg-white border-neon-blue text-dark shadow-neon">
                     <i className="bi bi-info-circle-fill me-2 fs-5 text-neon-blue"></i>
                     <div>
                         Showing <strong>{filteredUrls.length}</strong> of <strong>{urls.length}</strong> URLs
@@ -283,8 +283,8 @@ const Urls = () => {
                                 <div
                                     className={`card h-100 shadow border-neon card-custom ${
                                         index % 2 === 0
-                                            ? "bg-neon-card-even"
-                                            : "bg-neon-card-odd"
+                                            ? "bg-dark-card-even"
+                                            : "bg-dark-card-odd"
                                     }`}
                                 >
                                     <div className="card-header bg-neon-blue text-white d-flex justify-content-between align-items-center">
@@ -296,7 +296,7 @@ const Urls = () => {
                                             ID: {url._id.slice(-6)}
                                         </span>
                                     </div>
-                                    <div className="card-body">
+                                    <div className="card-body text-light">
                                         <div className="mb-3">
                                             <h6 className="text-muted d-flex align-items-center">
                                                 <i className="bi bi-link-45deg me-2"></i>
@@ -418,7 +418,7 @@ const Urls = () => {
                         <ul className="pagination">
                             <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
                                 <button
-                                    className="page-link bg-dark text-neon-blue border-neon-blue"
+                                    className="page-link bg-white text-neon-blue border-neon-blue"
                                     onClick={() => setCurrentPage(currentPage - 1)}
                                 >
                                     Previous
@@ -430,7 +430,7 @@ const Urls = () => {
                                     className={`page-item ${currentPage === i + 1 ? "active" : ""}`}
                                 >
                                     <button
-                                        className="page-link bg-dark text-neon-blue border-neon-blue"
+                                        className="page-link bg-white text-neon-blue border-neon-blue"
                                         onClick={() => setCurrentPage(i + 1)}
                                     >
                                         {i + 1}
@@ -443,7 +443,7 @@ const Urls = () => {
                                 }`}
                             >
                                 <button
-                                    className="page-link bg-dark text-neon-blue border-neon-blue"
+                                    className="page-link bg-white text-neon-blue border-neon-blue"
                                     onClick={() => setCurrentPage(currentPage + 1)}
                                 >
                                     Next
@@ -461,11 +461,11 @@ const Urls = () => {
                 className="d-flex justify-content-end mt-3"
             >
                 <div className="input-group" style={{ maxWidth: "300px" }}>
-                    <span className="input-group-text bg-dark border-neon-blue text-neon-blue">
+                    <span className="input-group-text bg-white border-neon-blue text-neon-blue">
                         Sort by
                     </span>
                     <select
-                        className="form-select bg-dark text-light border-neon-blue"
+                        className="form-select bg-white text-dark border-neon-blue"
                         value={sortField}
                         onChange={(e) => handleSort(e.target.value)}
                     >
@@ -547,7 +547,7 @@ const Urls = () => {
                                                 selectedUrl.isSafe
                                                     ? "text-neon-green neon-glow"
                                                     : "text-neon-red"
-                                            }`}
+                                                }`}
                                         >
                                             {selectedUrl.isSafe ? "Safe" : "Danger"}
                                         </p>

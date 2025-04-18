@@ -29,20 +29,20 @@
     color: transparent;
 }
 
-.bg-blue-gray {
-    background: linear-gradient(135deg, #0a0f1a 0%, #1a2530 100%);
+.bg-light-gray {
+    background: linear-gradient(135deg, #f0f2f5 0%, #e8ecef 100%);
 }
 
-.bg-container {
-    background: linear-gradient(135deg, #151a25 0%, #252a35 100%);
+.bg-container-light {
+    background: linear-gradient(135deg, #e0e4e8 0%, #d8dce0 100%);
 }
 
-.bg-neon-card-even {
-    background: linear-gradient(135deg, #1f2a3a 0%, #2a3a4a 100%);
+.bg-dark-card-even {
+    background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
 }
 
-.bg-neon-card-odd {
-    background: linear-gradient(135deg, #2a3a4a 0%, #1f2a3a 100%);
+.bg-dark-card-odd {
+    background: linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%);
 }
 
 .bg-neon-blue {
@@ -139,7 +139,7 @@
 
 .btn-outline-neon:hover {
     background: #00f0ff;
-    color: #1a1a1a;
+    color: #0a0a0a;
     box-shadow: 0 0 10px #00f0ff;
 }
 
