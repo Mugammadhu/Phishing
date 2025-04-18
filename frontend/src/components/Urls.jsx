@@ -142,7 +142,7 @@ const Urls = () => {
     }
 
     return (
-        <div className="container-fluid p-4 bg-dark text-light min-vh-100">
+        <div className="container-fluid p-4 bg-white text-light min-vh-100">
             {/* Toast Notification */}
             <AnimatePresence>
                 {toast.show && (
