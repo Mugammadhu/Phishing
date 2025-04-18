@@ -21,7 +21,7 @@ const adminSecretKey = process.env.ADMIN_SECRET;
 connectDatabase();
 app.use(
     cors({
-        origin: process.env.FRONTEND_URL || "https://phishing-detection.netlify.app",
+        origin:"https://phishing-detection.netlify.app",
         credentials: true,
         methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
         allowedHeaders: ["Content-Type", "Authorization"],
