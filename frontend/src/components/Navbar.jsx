@@ -8,8 +8,8 @@ const Navbar = () => {
     const [active, setActive] = useState(1);
     const [cookies, , removeCookie] = useCookies(["authToken"]);
     const [showSpinner, setShowSpinner] = useState(false);
-    const [isAdmin, setIsAdmin] = useState(false);
-    const [authError, setAuthError] = useState(""); // Track auth errors
+    const [isAdmin, setIsAdmin] = useState(localStorage.getItem("isAdmin") === "true");
+    const [authError, setAuthError] = useState("");
     const navigate = useNavigate();
 
     const verifyAuth = async (retries = 2, delay = 1000) => {
@@ -28,7 +28,9 @@ const Navbar = () => {
                 withCredentials: true,
             });
             console.log("Navbar: Auth response:", response.data); // Debug
-            setIsAdmin(response.data?.isAdmin || false);
+            const isAdminStatus = response.data?.isAdmin || false;
+            setIsAdmin(isAdminStatus);
+            localStorage.setItem("isAdmin", isAdminStatus.toString()); // Persist isAdmin
             setAuthError("");
         } catch (error) {
             console.error("Navbar: Auth check failed:", error.message, error.response?.data); // Debug
@@ -38,6 +40,7 @@ const Navbar = () => {
                 return verifyAuth(retries - 1, delay);
             }
             setIsAdmin(false);
+            localStorage.setItem("isAdmin", "false");
             setAuthError("Failed to verify admin status. Please try logging in again.");
         }
     };
@@ -47,6 +50,7 @@ const Navbar = () => {
             verifyAuth();
         } else {
             setIsAdmin(false);
+            localStorage.setItem("isAdmin", "false");
             setAuthError("No authentication token found.");
         }
     }, [cookies.authToken]);
@@ -79,6 +83,7 @@ const Navbar = () => {
             removeCookie("authToken", { path: "/", sameSite: "none", secure: true });
             removeCookie("adminToken", { path: "/", sameSite: "none", secure: true });
             localStorage.removeItem("authToken");
+            localStorage.removeItem("isAdmin");
             setIsAdmin(false);
             navigate("/login");
         } catch (error) {
@@ -87,6 +92,7 @@ const Navbar = () => {
             removeCookie("authToken", { path: "/", sameSite: "none", secure: true });
             removeCookie("adminToken", { path: "/", sameSite: "none", secure: true });
             localStorage.removeItem("authToken");
+            localStorage.removeItem("isAdmin");
             setIsAdmin(false);
             navigate("/login");
         } finally {
@@ -97,7 +103,7 @@ const Navbar = () => {
     return (
         <nav className="navbar">
             <h2>DarkShield</h2>
-            {authError && <p style={{ color: "red" }}>{authError}</p>} {/* Display errors */}
+            {authError && <p style={{ color: "red" }}>{authError}</p>}
             <ul>
                 <li>
                     <Link to="/" className={active===1?"active":""} onClick={() => setActive(1)}>Home</Link>

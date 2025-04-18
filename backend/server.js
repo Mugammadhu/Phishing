@@ -48,31 +48,25 @@ app.post("/signup", async (req, res) => {
     });
 
     const jwtToken = jwt.sign({ email }, secretKey, { expiresIn: "1h" });
-    res.cookie("authToken", jwtToken, {
-        httpOnly: true,
-        secure: true,
-        sameSite: "None",
-        maxAge: 24 * 60 * 60 * 1000,
-        path: "/",
-    });
+    res.setHeader("Set-Cookie", [
+        `authToken=${jwtToken}; HttpOnly; Secure; SameSite=None; Path=/; Max-Age=${24 * 60 * 60}; Partitioned`,
+    ]);
 
     const isAdmin = email === process.env.EMAILADD;
     console.log("Signup: isAdmin check:", { email, isAdmin, EMAILADD: process.env.EMAILADD }); // Debug
     if (isAdmin) {
         const adminToken = jwt.sign({ email }, adminSecretKey, { expiresIn: "3h" });
-        res.cookie("adminToken", adminToken, {
-            httpOnly: true,
-            secure: true,
-            sameSite: "None",
-            maxAge: 24 * 60 * 60 * 1000,
-            path: "/",
-        });
+        res.setHeader("Set-Cookie", [
+            `authToken=${jwtToken}; HttpOnly; Secure; SameSite=None; Path=/; Max-Age=${24 * 60 * 60}; Partitioned`,
+            `adminToken=${adminToken}; HttpOnly; Secure; SameSite=None; Path=/; Max-Age=${24 * 60 * 60}; Partitioned`,
+        ]);
     }
 
     res.json({
         message: "User created and logged in successfully",
         user: { name: newUser.name, email: newUser.email },
         token: jwtToken,
+        isAdmin,
     });
 });
 
@@ -88,46 +82,29 @@ app.post("/login", async (req, res) => {
     if (!isPasswordValid) return res.status(401).json({ error: "Invalid credentials" });
 
     const jwtToken = jwt.sign({ email }, secretKey, { expiresIn: "1h" });
-    res.cookie("authToken", jwtToken, {
-        httpOnly: true,
-        secure: true,
-        sameSite: "None",
-        maxAge: 24 * 60 * 60 * 1000,
-        path: "/",
-    });
-
     const isAdmin = email === process.env.EMAILADD;
     console.log("Login: isAdmin check:", { email, isAdmin, EMAILADD: process.env.EMAILADD }); // Debug
     if (isAdmin) {
         const adminToken = jwt.sign({ email }, adminSecretKey, { expiresIn: "3h" });
-        res.cookie("adminToken", adminToken, {
-            httpOnly: true,
-            secure: true,
-            sameSite: "None",
-            maxAge: 24 * 60 * 60 * 1000,
-            path: "/",
-        });
+        res.setHeader("Set-Cookie", [
+            `authToken=${jwtToken}; HttpOnly; Secure; SameSite=None; Path=/; Max-Age=${24 * 60 * 60}; Partitioned`,
+            `adminToken=${adminToken}; HttpOnly; Secure; SameSite=None; Path=/; Max-Age=${24 * 60 * 60}; Partitioned`,
+        ]);
+    } else {
+        res.setHeader("Set-Cookie", [
+            `authToken=${jwtToken}; HttpOnly; Secure; SameSite=None; Path=/; Max-Age=${24 * 60 * 60}; Partitioned`,
+        ]);
     }
 
-    res.json({ message: "Login successful", token: jwtToken });
+    res.json({ message: "Login successful", token: jwtToken, isAdmin });
 });
 
 app.post("/logout", (req, res) => {
     console.log("Logout request received"); // Debug
-    res.cookie("authToken", "", {
-        httpOnly: true,
-        secure: true,
-        sameSite: "None",
-        expires: new Date(0),
-        path: "/",
-    });
-    res.cookie("adminToken", "", {
-        httpOnly: true,
-        secure: true,
-        sameSite: "None",
-        expires: new Date(0),
-        path: "/",
-    });
+    res.setHeader("Set-Cookie", [
+        `authToken=; HttpOnly; Secure; SameSite=None; Path=/; Max-Age=0; Partitioned`,
+        `adminToken=; HttpOnly; Secure; SameSite=None; Path=/; Max-Age=0; Partitioned`,
+    ]);
     res.status(200).json({ message: "Logged out successfully" });
 });
 
@@ -155,7 +132,7 @@ app.get("/auth", (req, res) => {
                 response.isAdmin = false;
             }
         } else {
-            response.isAdmin = false;
+            response.isAdmin = decodedUser.email === process.env.EMAILADD;
         }
         console.log("Auth response:", response); // Debug
         res.json(response);

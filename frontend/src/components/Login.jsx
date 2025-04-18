@@ -31,8 +31,9 @@ const Login = () => {
                 }
                 setSuccessMessage(data.message);
                 setErrorMessage("");
-                localStorage.setItem("authToken", data.token); // Store token
-                console.log("Stored authToken:", data.token); // Debug
+                localStorage.setItem("authToken", data.token);
+                localStorage.setItem("isAdmin", data.isAdmin.toString()); // Store isAdmin
+                console.log("Stored authToken:", data.token, "isAdmin:", data.isAdmin); // Debug
                 setTimeout(() => {
                     navigate("/home");
                 }, 1000);
@@ -114,7 +115,7 @@ const Login = () => {
                 </div>
 
                 <p>
-                    Don't have an account? <Link to="/signup">Signup</Link>
+                    Don&apos;t have an account? <Link to="/signup">Signup</Link>
                 </p>
             </form>
         </div>

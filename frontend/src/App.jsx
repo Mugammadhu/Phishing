@@ -20,7 +20,7 @@ import axios from "axios";
 const App = () => {
     const [isAuthenticated, setIsAuthenticated] = useState(null);
     const [isAdmin, setIsAdmin] = useState(null);
-    const [authError, setAuthError] = useState(""); // Track auth errors
+    const [authError, setAuthError] = useState("");
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -29,7 +29,8 @@ const App = () => {
         const verifyAuth = async (retries = 2, delay = 1000) => {
             try {
                 const token = localStorage.getItem("authToken");
-                console.log("App: Token from localStorage:", token); // Debug
+                const storedIsAdmin = localStorage.getItem("isAdmin") === "true";
+                console.log("App: Token from localStorage:", token, "Stored isAdmin:", storedIsAdmin); // Debug
                 if (!token && !["/login", "/signup"].includes(location.pathname)) {
                     throw new Error("No token found");
                 }
@@ -47,7 +48,9 @@ const App = () => {
                 console.log("App: Auth response:", response.data); // Debug
                 if (response.data.authenticated) {
                     setIsAuthenticated(true);
-                    setIsAdmin(response.data.isAdmin || false);
+                    const isAdminStatus = response.data.isAdmin || false;
+                    setIsAdmin(isAdminStatus);
+                    localStorage.setItem("isAdmin", isAdminStatus.toString()); // Persist isAdmin
                     setAuthError("");
                 } else {
                     throw new Error(response.data.error || "Authentication failed");
@@ -61,6 +64,7 @@ const App = () => {
                 }
                 setIsAuthenticated(false);
                 setIsAdmin(false);
+                localStorage.setItem("isAdmin", "false");
                 setAuthError("Failed to verify authentication. Please log in again.");
                 if (!["/login", "/signup"].includes(location.pathname)) {
                     console.log("App: Redirecting to /login from:", location.pathname); // Debug
@@ -90,7 +94,6 @@ const App = () => {
                     >
                         <i className="bi bi-shield-lock-fill"></i>
                     </motion.div>
-
                     <motion.h2
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
@@ -99,7 +102,6 @@ const App = () => {
                     >
                         Secure Zone
                     </motion.h2>
-
                     <motion.p
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
@@ -108,7 +110,6 @@ const App = () => {
                     >
                         Ensuring your safety in the digital world...
                     </motion.p>
-
                     <motion.div
                         className="progress-bar-container"
                         initial={{ width: "0%" }}
@@ -117,7 +118,6 @@ const App = () => {
                     >
                         <div className="progress-bar"></div>
                     </motion.div>
-
                     <motion.p
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
@@ -146,7 +146,7 @@ const App = () => {
                 <Route path="/about" element={isAuthenticated ? <About /> : <Login />} />
                 <Route path="/phishing-checker" element={isAuthenticated ? <Phishing /> : <Login />} />
                 <Route path="/dark-web" element={isAuthenticated ? <DarkWeb /> : <Login />} />
-                <Route path="/admin" element={isAdmin ? <Admin /> : <Notfound />}>
+                <Route path="/admin" element={isAdmin ? <Admin /> : <Notfound />} >
                     <Route index element={<Users />} />
                     <Route path="contacts" element={<ContactInfo />} />
                 </Route>
