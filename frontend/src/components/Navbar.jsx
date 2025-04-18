@@ -15,7 +15,8 @@ const Navbar = () => {
     const verifyAuth = async (retries = 2, delay = 1000) => {
         try {
             const token = localStorage.getItem("authToken");
-            console.log("Navbar: Token from localStorage:", token); // Debug
+            const storedIsAdmin = localStorage.getItem("isAdmin") === "true";
+            console.log("Navbar: Token from localStorage:", token, "Stored isAdmin:", storedIsAdmin); // Debug
             const headers = {
                 "Content-Type": "application/json",
                 Accept: "application/json",
@@ -28,9 +29,9 @@ const Navbar = () => {
                 withCredentials: true,
             });
             console.log("Navbar: Auth response:", response.data); // Debug
-            const isAdminStatus = response.data?.isAdmin || false;
+            const isAdminStatus = response.data?.isAdmin || storedIsAdmin || false;
             setIsAdmin(isAdminStatus);
-            localStorage.setItem("isAdmin", isAdminStatus.toString()); // Persist isAdmin
+            localStorage.setItem("isAdmin", isAdminStatus.toString());
             setAuthError("");
         } catch (error) {
             console.error("Navbar: Auth check failed:", error.message, error.response?.data); // Debug
@@ -39,7 +40,7 @@ const Navbar = () => {
                 await new Promise(resolve => setTimeout(resolve, delay));
                 return verifyAuth(retries - 1, delay);
             }
-            setIsAdmin(false);
+            setIsAdmin(localStorage.getItem("isAdmin") === "true");
             localStorage.setItem("isAdmin", "false");
             setAuthError("Failed to verify admin status. Please try logging in again.");
         }

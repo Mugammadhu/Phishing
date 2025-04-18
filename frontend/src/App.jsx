@@ -19,13 +19,14 @@ import axios from "axios";
 
 const App = () => {
     const [isAuthenticated, setIsAuthenticated] = useState(null);
-    const [isAdmin, setIsAdmin] = useState(null);
+    const [isAdmin, setIsAdmin] = useState(localStorage.getItem("isAdmin") === "true");
     const [authError, setAuthError] = useState("");
     const navigate = useNavigate();
     const location = useLocation();
+    const [authToken, setAuthToken] = useState(localStorage.getItem("authToken")); // Track token changes
 
     useEffect(() => {
-        console.log("App: Current path:", location.pathname); // Debug
+        console.log("App: Current path:", location.pathname, "authToken:", authToken); // Debug
         const verifyAuth = async (retries = 2, delay = 1000) => {
             try {
                 const token = localStorage.getItem("authToken");
@@ -48,9 +49,9 @@ const App = () => {
                 console.log("App: Auth response:", response.data); // Debug
                 if (response.data.authenticated) {
                     setIsAuthenticated(true);
-                    const isAdminStatus = response.data.isAdmin || false;
+                    const isAdminStatus = response.data.isAdmin || storedIsAdmin || false;
                     setIsAdmin(isAdminStatus);
-                    localStorage.setItem("isAdmin", isAdminStatus.toString()); // Persist isAdmin
+                    localStorage.setItem("isAdmin", isAdminStatus.toString());
                     setAuthError("");
                 } else {
                     throw new Error(response.data.error || "Authentication failed");
@@ -63,7 +64,7 @@ const App = () => {
                     return verifyAuth(retries - 1, delay);
                 }
                 setIsAuthenticated(false);
-                setIsAdmin(false);
+                setIsAdmin(localStorage.getItem("isAdmin") === "true");
                 localStorage.setItem("isAdmin", "false");
                 setAuthError("Failed to verify authentication. Please log in again.");
                 if (!["/login", "/signup"].includes(location.pathname)) {
@@ -73,7 +74,24 @@ const App = () => {
             }
         };
         verifyAuth();
-    }, [navigate, location.pathname]);
+    }, [navigate, location.pathname, authToken]); // Add authToken dependency
+
+    // Monitor localStorage changes
+    useEffect(() => {
+        const checkToken = () => {
+            const token = localStorage.getItem("authToken");
+            if (token !== authToken) {
+                console.log("App: authToken changed:", token); // Debug
+                setAuthToken(token);
+            }
+        };
+        window.addEventListener("storage", checkToken);
+        const interval = setInterval(checkToken, 500); // Poll every 500ms
+        return () => {
+            window.removeEventListener("storage", checkToken);
+            clearInterval(interval);
+        };
+    }, [authToken]);
 
     if (isAuthenticated === null) {
         console.log("App: Rendering loading screen"); // Debug
@@ -146,7 +164,7 @@ const App = () => {
                 <Route path="/about" element={isAuthenticated ? <About /> : <Login />} />
                 <Route path="/phishing-checker" element={isAuthenticated ? <Phishing /> : <Login />} />
                 <Route path="/dark-web" element={isAuthenticated ? <DarkWeb /> : <Login />} />
-                <Route path="/admin" element={isAdmin ? <Admin /> : <Notfound />} >
+                <Route path="/admin" element={isAdmin ? <Admin /> : <Notfound />}>
                     <Route index element={<Users />} />
                     <Route path="contacts" element={<ContactInfo />} />
                 </Route>

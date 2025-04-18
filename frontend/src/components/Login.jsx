@@ -32,11 +32,9 @@ const Login = () => {
                 setSuccessMessage(data.message);
                 setErrorMessage("");
                 localStorage.setItem("authToken", data.token);
-                localStorage.setItem("isAdmin", data.isAdmin.toString()); // Store isAdmin
+                localStorage.setItem("isAdmin", data.isAdmin.toString());
                 console.log("Stored authToken:", data.token, "isAdmin:", data.isAdmin); // Debug
-                setTimeout(() => {
-                    navigate("/home");
-                }, 1000);
+                navigate("/home"); // Immediate redirect
             } else if (response.status === 404) {
                 setErrorMessage(data.error);
                 setSuccessMessage("");
