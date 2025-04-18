@@ -1,164 +1,397 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+import "bootstrap-icons/font/bootstrap-icons.css";
 import { motion, AnimatePresence } from "framer-motion";
-import "../styles/Urls.css";
+import '../styles/Urls.css'
 
 const Urls = () => {
     const [urls, setUrls] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState("");
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [urlToDelete, setUrlToDelete] = useState(null);
+    const [searchTerm, setSearchTerm] = useState("");
+    const [selectedUrl, setSelectedUrl] = useState(null);
+    const [showDetailsModal, setShowDetailsModal] = useState(false);
     const token = localStorage.getItem("authToken");
 
-    const fetchUrls = async () => {
-        try {
-            const response = await axios.get(`${import.meta.env.VITE_SERVER}/urls`, {
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`,
-                },
-                withCredentials: true,
-            });
-            setUrls(response.data);
-            setLoading(false);
-            setError("");
-        } catch (err) {
-            console.error("Error fetching URLs:", err.response?.data || err.message);
-            setError("Failed to fetch URLs. Please try again.");
-            setLoading(false);
-        }
-    };
-
-    const handleDelete = async (id) => {
-        try {
-            await axios.delete(`${import.meta.env.VITE_SERVER}/urls/${id}`, {
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`,
-                },
-                withCredentials: true,
-            });
-            setUrls(urls.filter((url) => url._id !== id));
-            setError("");
-        } catch (err) {
-            console.error("Error deleting URL:", err.response?.data || err.message);
-            setError("Failed to delete URL. Please try again.");
-        }
-    };
-
     useEffect(() => {
+        const fetchUrls = async () => {
+            try {
+                const response = await axios.get(`${import.meta.env.VITE_SERVER}/urls`, {
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${token}`,
+                    },
+                    withCredentials: true,
+                });
+                setUrls(response.data);
+            } catch (error) {
+                console.error("Error fetching URLs:", error.response?.data || error.message);
+            } finally {
+                setLoading(false);
+            }
+        };
         fetchUrls();
     }, []);
+
+    const filteredUrls = urls.filter(
+        (url) =>
+            url.url.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            (url.isSafe ? "safe" : "danger").includes(searchTerm.toLowerCase())
+    );
+
+    const confirmDelete = (url) => {
+        setUrlToDelete(url);
+        setShowDeleteModal(true);
+    };
+
+    const handleDelete = async () => {
+        try {
+            await axios.delete(`${import.meta.env.VITE_SERVER}/urls/${urlToDelete._id}`, {
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+                withCredentials: true,
+            });
+            setUrls(urls.filter((url) => url._id !== urlToDelete._id));
+            setShowDeleteModal(false);
+        } catch (error) {
+            console.error("Error deleting URL:", error.response?.data || error.message);
+        }
+    };
+
+    const viewDetails = (url) => {
+        setSelectedUrl(url);
+        setShowDetailsModal(true);
+    };
 
     if (loading) {
         return (
             <motion.div
-                className="flex items-center justify-center min-h-screen bg-gray-900"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                transition={{ duration: 0.5 }}
+                className="text-center my-5"
             >
-                <div className="text-center">
-                    <motion.div
-                        className="w-16 h-16 border-4 border-t-blue-500 border-gray-300 rounded-full"
-                        animate={{ rotate: 360 }}
-                        transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                    />
-                    <p className="mt-4 text-lg text-gray-300">Loading URLs...</p>
-                </div>
+                <i className="bi bi-link-45deg bi-spin fs-3 text-primary"></i>
+                <p className="mt-2">Loading URLs...</p>
             </motion.div>
         );
     }
 
     return (
-        <motion.div
-            className="min-h-screen bg-gray-900 text-gray-100 p-6"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-        >
-            <div className="max-w-7xl mx-auto">
-                <h1 className="text-3xl font-bold mb-6 text-center bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-500">
-                    Phishing URL Records
-                </h1>
-                {error && (
-                    <motion.p
-                        className="text-center text-red-500 mb-4"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ duration: 0.3 }}
-                    >
-                        {error}
-                    </motion.p>
-                )}
-                {urls.length === 0 ? (
-                    <p className="text-center text-gray-400">No URLs found.</p>
-                ) : (
-                    <div className="overflow-x-auto shadow-lg rounded-lg">
-                        <table className="w-full bg-gray-800 rounded-lg">
-                            <thead>
-                                <tr className="bg-gray-700 text-gray-200">
-                                    <th className="p-4 text-left">URL</th>
-                                    <th className="p-4 text-center">Status</th>
-                                    <th className="p-4 text-center">Confidence</th>
-                                    <th className="p-4 text-center">Created At</th>
-                                    <th className="p-4 text-center">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <AnimatePresence>
-                                    {urls.map((url) => (
-                                        <motion.tr
-                                            key={url._id}
-                                            className="border-t border-gray-700 hover:bg-gray-750 transition-colors"
-                                            initial={{ opacity: 0, y: 10 }}
-                                            animate={{ opacity: 1, y: 0 }}
-                                            exit={{ opacity: 0, y: -10 }}
-                                            transition={{ duration: 0.3 }}
-                                        >
-                                            <td className="p-4">
+        <div className="container p-4">
+            <motion.div
+                initial={{ y: -20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ duration: 0.5 }}
+                className="mb-4"
+            >
+                <div className="d-flex flex-column flex-md-row justify-content-between align-items-center gap-3 mb-4">
+                    <h2 className="m-0">
+                        <i className="bi bi-link-45deg me-2 text-primary"></i>
+                        Phishing URL Records
+                    </h2>
+                    <div className="input-group" style={{ maxWidth: "400px" }}>
+                        <span className="input-group-text">
+                            <i className="bi bi-search"></i>
+                        </span>
+                        <input
+                            type="text"
+                            className="form-control"
+                            placeholder="Search URLs or status..."
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                        />
+                    </div>
+                </div>
+                <div className="alert alert-info d-flex align-items-center">
+                    <i className="bi bi-info-circle-fill me-2 fs-5"></i>
+                    <div>
+                        Showing <strong>{filteredUrls.length}</strong> of <strong>{urls.length}</strong> URLs
+                    </div>
+                </div>
+            </motion.div>
+
+            <div className="row g-4">
+                <AnimatePresence>
+                    {filteredUrls.length > 0 ? (
+                        filteredUrls.map((url, index) => (
+                            <motion.div
+                                key={url._id}
+                                initial={{ x: -50, opacity: 0 }}
+                                animate={{ x: 0, opacity: 1 }}
+                                exit={{ opacity: 0, scale: 0.9 }}
+                                transition={{ delay: index * 0.05, type: "spring" }}
+                                className="col-md-6 col-lg-4"
+                            >
+                                <div className="card h-100 shadow-sm border-0 hover-effect">
+                                    <div className="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                                        <h5 className="mb-0">
+                                            <i className="bi bi-link-45deg me-2"></i>
+                                            URL #{index + 1}
+                                        </h5>
+                                        <span className="badge bg-light text-dark">ID: {url._id.slice(-6)}</span>
+                                    </div>
+                                    <div className="card-body">
+                                        <div className="mb-3">
+                                            <h6 className="text-muted d-flex align-items-center">
+                                                <i className="bi bi-link-45deg me-2"></i>
+                                                URL
+                                            </h6>
+                                            <p className="mb-0 text-truncate">
                                                 <a
                                                     href={url.url}
                                                     target="_blank"
                                                     rel="noopener noreferrer"
-                                                    className="text-blue-400 hover:underline truncate max-w-xs block"
+                                                    className="text-primary"
                                                 >
                                                     {url.url}
                                                 </a>
-                                            </td>
-                                            <td className="p-4 text-center">
-                                                <span
-                                                    className={`px-3 py-1 rounded-full text-sm font-semibold ${
+                                            </p>
+                                        </div>
+                                        <div className="mb-3">
+                                            <h6 className="text-muted d-flex align-items-center">
+                                                <i
+                                                    className={`bi ${
                                                         url.isSafe
-                                                            ? "bg-green-600 text-green-100"
-                                                            : "bg-red-600 text-red-100"
-                                                    }`}
-                                                >
-                                                    {url.isSafe ? "Safe" : "Phishing"}
-                                                </span>
-                                            </td>
-                                            <td className="p-4 text-center">{url.confidence.toFixed(2)}%</td>
-                                            <td className="p-4 text-center">
-                                                {new Date(url.createdAt).toLocaleString()}
-                                            </td>
-                                            <td className="p-4 text-center">
-                                                <motion.button
-                                                    onClick={() => handleDelete(url._id)}
-                                                    className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
-                                                    whileHover={{ scale: 1.05 }}
-                                                    whileTap={{ scale: 0.95 }}
-                                                >
-                                                    Delete
-                                                </motion.button>
-                                            </td>
-                                        </motion.tr>
-                                    ))}
-                                </AnimatePresence>
-                            </tbody>
-                        </table>
-                    </div>
-                )}
+                                                            ? "bi-shield-check"
+                                                            : "bi-exclamation-triangle"
+                                                    } me-2`}
+                                                ></i>
+                                                Status
+                                            </h6>
+                                            <p
+                                                className={`mb-0 font-semibold ${
+                                                    url.isSafe ? "text-green-600" : "text-red-600"
+                                                }`}
+                                            >
+                                                {url.isSafe ? "Safe" : "Danger"}
+                                            </p>
+                                        </div>
+                                        <div>
+                                            <h6 className="text-muted d-flex align-items-center">
+                                                <i className="bi bi-graph-up me-2"></i>
+                                                Confidence
+                                            </h6>
+                                            <p className="mb-0">{url.confidence.toFixed(2)}%</p>
+                                        </div>
+                                    </div>
+                                    <div className="card-footer bg-light d-flex justify-content-between">
+                                        <button
+                                            className="btn btn-outline-primary btn-sm"
+                                            onClick={() => viewDetails(url)}
+                                        >
+                                            <i className="bi bi-eye-fill me-1"></i>
+                                            View
+                                        </button>
+                                        <button
+                                            className="btn btn-outline-danger btn-sm"
+                                            onClick={() => confirmDelete(url)}
+                                        >
+                                            <i className="bi bi-trash-fill me-1"></i>
+                                            Delete
+                                        </button>
+                                    </div>
+                                </div>
+                            </motion.div>
+                        ))
+                    ) : (
+                        <motion.div
+                            initial={{ scale: 0.9, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            className="col-12 text-center py-5 text-muted"
+                        >
+                            <i className="bi bi-link-45deg fs-1"></i>
+                            <p className="mt-3">
+                                {searchTerm ? "No matching URLs found" : "No URLs available"}
+                            </p>
+                            {searchTerm && (
+                                <button
+                                    className="btn btn-outline-secondary mt-2"
+                                    onClick={() => setSearchTerm("")}
+                                >
+                                    <i className="bi bi-arrow-counterclockwise me-1"></i>
+                                    Clear search
+                                </button>
+                            )}
+                        </motion.div>
+                    )}
+                </AnimatePresence>
             </div>
-        </motion.div>
+
+            {/* URL Details Modal */}
+            {showDetailsModal && selectedUrl && (
+                <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="modal fade show d-block"
+                    style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
+                >
+                    <motion.div
+                        initial={{ scale: 0.9, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        className="modal-dialog modal-dialog-centered modal-lg"
+                    >
+                        <div className="modal-content">
+                            <div className="modal-header bg-primary text-white">
+                                <h5 className="modal-title">
+                                    <i className="bi bi-link-45deg me-2"></i>
+                                    URL Details
+                                </h5>
+                                <button
+                                    type="button"
+                                    className="btn-close btn-close-white"
+                                    onClick={() => setShowDetailsModal(false)}
+                                ></button>
+                            </div>
+                            <div className="modal-body">
+                                <div className="row">
+                                    <div className="col-md-6 mb-3">
+                                        <h6 className="text-muted">
+                                            <i className="bi bi-link-45deg me-2"></i>
+                                            URL
+                                        </h6>
+                                        <p className="fs-5">
+                                            <a
+                                                href={selectedUrl.url}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="text-primary"
+                                            >
+                                                {selectedUrl.url}
+                                            </a>
+                                        </p>
+                                    </div>
+                                    <div className="col-md-6 mb-3">
+                                        <h6 className="text-muted">
+                                            <i
+                                                className={`bi ${
+                                                    selectedUrl.isSafe
+                                                        ? "bi-shield-check"
+                                                        : "bi-exclamation-triangle"
+                                                } me-2`}
+                                            ></i>
+                                            Status
+                                        </h6>
+                                        <p
+                                            className={`fs-5 ${
+                                                selectedUrl.isSafe ? "text-green-600" : "text-red-600"
+                                            }`}
+                                        >
+                                            {selectedUrl.isSafe ? "Safe" : "Danger"}
+                                        </p>
+                                    </div>
+                                </div>
+                                <div className="mb-3">
+                                    <h6 className="text-muted">
+                                        <i className="bi bi-graph-up me-2"></i>
+                                        Confidence
+                                    </h6>
+                                    <p>{selectedUrl.confidence.toFixed(2)}%</p>
+                                </div>
+                                <div className="row">
+                                    <div className="col-md-6 mb-3">
+                                        <h6 className="text-muted">
+                                            <i className="bi bi-calendar-fill me-2"></i>
+                                            Created At
+                                        </h6>
+                                        <p>{new Date(selectedUrl.createdAt).toLocaleString()}</p>
+                                    </div>
+                                    <div className="col-md-6 mb-3">
+                                        <h6 className="text-muted">
+                                            <i className="bi bi-calendar-check-fill me-2"></i>
+                                            Updated At
+                                        </h6>
+                                        <p>{new Date(selectedUrl.updatedAt).toLocaleString()}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="modal-footer">
+                                <button
+                                    type="button"
+                                    className="btn btn-secondary"
+                                    onClick={() => setShowDetailsModal(false)}
+                                >
+                                    <i className="bi bi-x-circle-fill me-1"></i>
+                                    Close
+                                </button>
+                                <a
+                                    href={selectedUrl.url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="btn btn-success"
+                                >
+                                    <i className="bi bi-box-arrow-up-right me-1"></i>
+                                    Visit URL
+                                </a>
+                            </div>
+                        </div>
+                    </motion.div>
+                </motion.div>
+            )}
+
+            {/* Delete Confirmation Modal */}
+            {showDeleteModal && urlToDelete && (
+                <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="modal fade show d-block"
+                    style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
+                >
+                    <motion.div
+                        initial={{ y: -50, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        className="modal-dialog modal-dialog-centered"
+                    >
+                        <div className="modal-content">
+                            <div className="modal-header bg-danger text-white">
+                                <h5 className="modal-title">
+                                    <i className="bi bi-exclamation-triangle-fill me-2"></i>
+                                    Confirm Deletion
+                                </h5>
+                                <button
+                                    type="button"
+                                    className="btn-close btn-close-white"
+                                    onClick={() => setShowDeleteModal(false)}
+                                ></button>
+                            </div>
+                            <div className="modal-body">
+                                <p>
+                                    Are you sure you want to delete this URL:{" "}
+                                    <strong>{urlToDelete.url}</strong>?
+                                </p>
+                                <div className="alert alert-warning d-flex align-items-center">
+                                    <i className="bi bi-info-circle-fill me-2 fs-5"></i>
+                                    <div>
+                                        This action cannot be undone. All URL data will be permanently
+                                        removed.
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="modal-footer">
+                                <button
+                                    type="button"
+                                    className="btn btn-secondary"
+                                    onClick={() => setShowDeleteModal(false)}
+                                >
+                                    <i className="bi bi-x-circle-fill me-1"></i>
+                                    Cancel
+                                </button>
+                                <button
+                                    type="button"
+                                    className="btn btn-danger"
+                                    onClick={handleDelete}
+                                >
+                                    <i className="bi bi-trash3-fill me-1"></i>
+                                    Delete Permanently
+                                </button>
+                            </div>
+                        </div>
+                    </motion.div>
+                </motion.div>
+            )}
+        </div>
     );
 };
 

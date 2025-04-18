@@ -1,9 +1,12 @@
-.bg-gray-750 {
-    background-color: #2d3748;
+.hover-effect {
+    transition: transform 0.2s, box-shadow 0.2s;
 }
 
-.truncate {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+.hover-effect:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+.text-truncate {
+    max-width: 200px;
 }
