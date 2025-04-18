@@ -27,6 +27,15 @@ const Admin = () => {
             Contacts
           </Link>
         </li>
+        <li className="nav-item">
+          <Link
+            to="/admin/urls"
+            className={`nav-link ${activeTab === 'urls' ? 'active' : ''}`}
+          >
+            <i className="bi bi-envelope-fill me-2"></i>
+            URLS
+          </Link>
+        </li>
       </ul>
 
       <div className="tab-content p-4 border border-top-0 rounded-bottom bg-white">

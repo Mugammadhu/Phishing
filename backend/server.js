@@ -11,6 +11,7 @@ const urlRoutes = require("./routes/urlRoutes.js");
 const userRoute = require("./routes/userRoute.js");
 const ContactRoute = require("./routes/ContactRoute.js");
 const nodemailer = require("nodemailer");
+const urlDBRoutes=require('./routes/urlDBRoutes.js');
 
 dotenv.config();
 const app = express();
@@ -146,6 +147,7 @@ app.get("/auth", (req, res) => {
 app.use("/api", urlRoutes);
 app.use("/users", userRoute);
 app.use("/contacts", ContactRoute);
+app.use('/url',urlDBRoutes);
 
 // Contact form and email functionality
 app.post("/send", async (req, res) => {

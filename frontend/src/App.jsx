@@ -14,8 +14,8 @@ import "./App.css";
 import Admin from "./components/Admin";
 import Users from "./components/Users";
 import ContactInfo from "./components/ContactInfo";
-import DarkWeb from "./components/Darkweb";
 import axios from "axios";
+import Urls from "./components/Urls"
 
 const App = () => {
     const [isAuthenticated, setIsAuthenticated] = useState(null);
@@ -70,12 +70,10 @@ const App = () => {
                 if (token) {
                     setIsAuthenticated(true);
                     setIsAdmin(localStorage.getItem("isAdmin") === "true");
-                    setAuthError("");
                 } else {
                     setIsAuthenticated(false);
                     setIsAdmin(false);
                     localStorage.setItem("isAdmin", "false");
-                    setAuthError("Failed to verify authentication. Please log in again.");
                     if (!["/login", "/signup"].includes(location.pathname)) {
                         console.log("App: Redirecting to /login from:", location.pathname); // Debug
                         navigate("/login", { replace: true });
@@ -171,10 +169,10 @@ const App = () => {
                 <Route path="/contact" element={isAuthenticated ? <Contact /> : <Login />} />
                 <Route path="/about" element={isAuthenticated ? <About /> : <Login />} />
                 <Route path="/phishing-checker" element={isAuthenticated ? <Phishing /> : <Login />} />
-                <Route path="/dark-web" element={isAuthenticated ? <DarkWeb /> : <Login />} />
                 <Route path="/admin" element={isAdmin ? <Admin /> : <Notfound />}>
                     <Route index element={<Users />} />
                     <Route path="contacts" element={<ContactInfo />} />
+                    <Route path="urls" element={<Urls/>}/>
                 </Route>
                 <Route path="*" element={<Notfound />} />
             </Routes>
