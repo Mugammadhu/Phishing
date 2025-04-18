@@ -23,15 +23,22 @@ const App = () => {
     const [authError, setAuthError] = useState("");
     const navigate = useNavigate();
     const location = useLocation();
-    const [authToken, setAuthToken] = useState(localStorage.getItem("authToken")); // Track token changes
+    const [authToken, setAuthToken] = useState(localStorage.getItem("authToken"));
 
     useEffect(() => {
         console.log("App: Current path:", location.pathname, "authToken:", authToken); // Debug
-        const verifyAuth = async (retries = 2, delay = 1000) => {
+        const verifyAuth = async (retries = 3, delay = 1500) => { // Increased retries and delay
             try {
                 const token = localStorage.getItem("authToken");
                 const storedIsAdmin = localStorage.getItem("isAdmin") === "true";
                 console.log("App: Token from localStorage:", token, "Stored isAdmin:", storedIsAdmin); // Debug
+                if (token && ["login", "/signup"].includes(location.pathname)) {
+                    // Assume authenticated if token exists on login/signup
+                    setIsAuthenticated(true);
+                    setIsAdmin(storedIsAdmin);
+                    setAuthError("");
+                    return;
+                }
                 if (!token && !["/login", "/signup"].includes(location.pathname)) {
                     throw new Error("No token found");
                 }
@@ -63,20 +70,27 @@ const App = () => {
                     await new Promise((resolve) => setTimeout(resolve, delay));
                     return verifyAuth(retries - 1, delay);
                 }
-                setIsAuthenticated(false);
-                setIsAdmin(localStorage.getItem("isAdmin") === "true");
-                localStorage.setItem("isAdmin", "false");
-                setAuthError("Failed to verify authentication. Please log in again.");
-                if (!["/login", "/signup"].includes(location.pathname)) {
-                    console.log("App: Redirecting to /login from:", location.pathname); // Debug
-                    navigate("/login", { replace: true });
+                const token = localStorage.getItem("authToken");
+                if (token) {
+                    // Fallback to localStorage
+                    setIsAuthenticated(true);
+                    setIsAdmin(localStorage.getItem("isAdmin") === "true");
+                    setAuthError("");
+                } else {
+                    setIsAuthenticated(false);
+                    setIsAdmin(false);
+                    localStorage.setItem("isAdmin", "false");
+                    setAuthError("Failed to verify authentication. Please log in again.");
+                    if (!["/login", "/signup"].includes(location.pathname)) {
+                        console.log("App: Redirecting to /login from:", location.pathname); // Debug
+                        navigate("/login", { replace: true });
+                    }
                 }
             }
         };
         verifyAuth();
-    }, [navigate, location.pathname, authToken]); // Add authToken dependency
+    }, [navigate, location.pathname, authToken]);
 
-    // Monitor localStorage changes
     useEffect(() => {
         const checkToken = () => {
             const token = localStorage.getItem("authToken");
@@ -86,7 +100,7 @@ const App = () => {
             }
         };
         window.addEventListener("storage", checkToken);
-        const interval = setInterval(checkToken, 500); // Poll every 500ms
+        const interval = setInterval(checkToken, 500);
         return () => {
             window.removeEventListener("storage", checkToken);
             clearInterval(interval);

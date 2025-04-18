@@ -2,6 +2,7 @@ import { useState } from "react";
 import "../styles/Login.css";
 import { Link, useNavigate } from "react-router-dom";
 import "bootstrap-icons/font/bootstrap-icons.css";
+import axios from "axios";
 
 const Login = () => {
     const [user, setUser] = useState({ email: "", password: "" });
@@ -9,6 +10,25 @@ const Login = () => {
     const [successMessage, setSuccessMessage] = useState("");
     const navigate = useNavigate();
     const [showPass, setShowPass] = useState(false);
+
+    const verifyAuth = async (token) => {
+        try {
+            const headers = {
+                "Content-Type": "application/json",
+                Accept: "application/json",
+                Authorization: `Bearer ${token}`,
+            };
+            const response = await axios.get(`${import.meta.env.vite_server}/auth`, {
+                headers,
+                withCredentials: true,
+            });
+            console.log("Login: Post-login auth response:", response.data); // Debug
+            return response.data;
+        } catch (error) {
+            console.error("Login: Post-login auth check failed:", error.message); // Debug
+            throw error;
+        }
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -29,12 +49,19 @@ const Login = () => {
                 if (!data.token) {
                     throw new Error("No token received from server");
                 }
-                setSuccessMessage(data.message);
-                setErrorMessage("");
                 localStorage.setItem("authToken", data.token);
                 localStorage.setItem("isAdmin", data.isAdmin.toString());
                 console.log("Stored authToken:", data.token, "isAdmin:", data.isAdmin); // Debug
-                navigate("/home"); // Immediate redirect
+                setSuccessMessage(data.message);
+                setErrorMessage("");
+
+                // Verify auth immediately
+                const authData = await verifyAuth(data.token);
+                if (authData.authenticated) {
+                    navigate("/home");
+                } else {
+                    throw new Error("Post-login authentication failed");
+                }
             } else if (response.status === 404) {
                 setErrorMessage(data.error);
                 setSuccessMessage("");
@@ -113,7 +140,7 @@ const Login = () => {
                 </div>
 
                 <p>
-                    Don&apos;t have an account? <Link to="/signup">Signup</Link>
+                    Don't have an account? <Link to="/signup">Signup</Link>
                 </p>
             </form>
         </div>

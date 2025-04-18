@@ -12,11 +12,14 @@ const Navbar = () => {
     const [authError, setAuthError] = useState("");
     const navigate = useNavigate();
 
-    const verifyAuth = async (retries = 2, delay = 1000) => {
+    const verifyAuth = async (retries = 3, delay = 1500) => { // Increased retries and delay
         try {
             const token = localStorage.getItem("authToken");
             const storedIsAdmin = localStorage.getItem("isAdmin") === "true";
             console.log("Navbar: Token from localStorage:", token, "Stored isAdmin:", storedIsAdmin); // Debug
+            if (!token) {
+                throw new Error("No token found");
+            }
             const headers = {
                 "Content-Type": "application/json",
                 Accept: "application/json",
@@ -40,9 +43,9 @@ const Navbar = () => {
                 await new Promise(resolve => setTimeout(resolve, delay));
                 return verifyAuth(retries - 1, delay);
             }
-            setIsAdmin(localStorage.getItem("isAdmin") === "true");
-            localStorage.setItem("isAdmin", "false");
-            setAuthError("Failed to verify admin status. Please try logging in again.");
+            const storedIsAdmin = localStorage.getItem("isAdmin") === "true";
+            setIsAdmin(storedIsAdmin);
+            setAuthError(storedIsAdmin ? "" : "Failed to verify admin status. Please try logging in again.");
         }
     };
 
@@ -84,7 +87,7 @@ const Navbar = () => {
             removeCookie("authToken", { path: "/", sameSite: "none", secure: true });
             removeCookie("adminToken", { path: "/", sameSite: "none", secure: true });
             localStorage.removeItem("authToken");
-            localStorage.removeItem("isAdmin");
+            localStorage.setItem("isAdmin", "false");
             setIsAdmin(false);
             navigate("/login");
         } catch (error) {
@@ -93,7 +96,7 @@ const Navbar = () => {
             removeCookie("authToken", { path: "/", sameSite: "none", secure: true });
             removeCookie("adminToken", { path: "/", sameSite: "none", secure: true });
             localStorage.removeItem("authToken");
-            localStorage.removeItem("isAdmin");
+            localStorage.setItem("isAdmin", "false");
             setIsAdmin(false);
             navigate("/login");
         } finally {
