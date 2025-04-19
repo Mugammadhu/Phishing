@@ -1,158 +1,126 @@
-/* eslint-disable react/prop-types */
-import { Link, useNavigate } from "react-router-dom";
-import "../styles/navbar.css";
 import { useState, useEffect } from "react";
-import { useCookies } from "react-cookie";
-import axios from "axios";
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import "../styles/Navbar.css";
 
-const Navbar = ({ isAdmin: propIsAdmin }) => {
-    const [active, setActive] = useState(1);
-    const [cookies, , removeCookie] = useCookies(["authToken"]);
-    const [showSpinner, setShowSpinner] = useState(false);
-    const [isAdmin, setIsAdmin] = useState(propIsAdmin || localStorage.getItem("isAdmin") === "true");
-    const navigate = useNavigate();
+const Navbar = () => {
+  const [active, setActive] = useState(0);
+  const [isAdmin, setIsAdmin] = useState(localStorage.getItem("isAdmin") === "true");
+  const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem("authToken"));
+  const navigate = useNavigate();
+  const location = useLocation();
 
+  // Sync active state with current route
+  useEffect(() => {
+    const path = location.pathname;
+    if (path === "/") {
+      setActive(1);
+    } else if (path === "/phishing") {
+      setActive(2);
+    } else if (path === "/signup") {
+      setActive(3);
+    } else if (path === "/login") {
+      setActive(4);
+    } else if (path === "/admin/urls") {
+      setActive(5);
+    } else {
+      setActive(0); // Default: no active tab
+    }
+  }, [location.pathname]);
 
-    useEffect(() => {
-        console.log("Navbar: propIsAdmin:", propIsAdmin, "localStorage isAdmin:", localStorage.getItem("isAdmin")); // Debug
-        if (propIsAdmin !== undefined) {
-            setIsAdmin(propIsAdmin);
-            localStorage.setItem("isAdmin", propIsAdmin.toString());
-        }
-    }, [propIsAdmin]);
+  const handleLogout = () => {
+    localStorage.removeItem("authToken");
+    localStorage.removeItem("isAdmin");
+    setIsAdmin(false);
+    setIsLoggedIn(false);
+    setActive(0);
+    navigate("/login");
+  };
 
-    useEffect(() => {
-        const checkIsAdmin = () => {
-            const storedIsAdmin = localStorage.getItem("isAdmin") === "true";
-            if (storedIsAdmin !== isAdmin) {
-                console.log("Navbar: isAdmin changed in localStorage:", storedIsAdmin); // Debug
-                setIsAdmin(storedIsAdmin);
-            }
-        };
-        window.addEventListener("storage", checkIsAdmin);
-        const interval = setInterval(checkIsAdmin, 500);
-        return () => {
-            window.removeEventListener("storage", checkIsAdmin);
-            clearInterval(interval);
-        };
-    }, [isAdmin]);
-
-    const verifyAuth = async (retries = 3, delay = 1500) => {
-        try {
-            const token = localStorage.getItem("authToken");
-            const storedIsAdmin = localStorage.getItem("isAdmin") === "true";
-            console.log("Navbar: Token from localStorage:", token, "Stored isAdmin:", storedIsAdmin); // Debug
-            if (!token) {
-                throw new Error("No token found");
-            }
-            const headers = {
-                "Content-Type": "application/json",
-                Accept: "application/json",
-            };
-            if (token) {
-                headers["Authorization"] = `Bearer ${token}`;
-            }
-            const response = await axios.get(`${import.meta.env.VITE_SERVER}/auth`, {
-                headers,
-                withCredentials: true,
-            });
-            console.log("Navbar: Auth response:", response.data); // Debug
-            const isAdminStatus = response.data?.isAdmin || storedIsAdmin || false;
-            setIsAdmin(isAdminStatus);
-            localStorage.setItem("isAdmin", isAdminStatus.toString());
-        } catch (error) {
-            console.error("Navbar: Auth check failed:", error.message, error.response?.data); // Debug
-            if (retries > 0) {
-                console.log(`Navbar: Retrying auth check, ${retries} attempts left`); // Debug
-                await new Promise(resolve => setTimeout(resolve, delay));
-                return verifyAuth(retries - 1, delay);
-            }
-            const storedIsAdmin = localStorage.getItem("isAdmin") === "true";
-            setIsAdmin(storedIsAdmin);
-        }
-    };
-
-    useEffect(() => {
-        if (cookies.authToken || localStorage.getItem("authToken")) {
-            verifyAuth();
-        } else {
-            setIsAdmin(false);
-            localStorage.setItem("isAdmin", "false");
-        }
-    }, [cookies.authToken]);
-
-    const handleLogout = async () => {
-        const token = localStorage.getItem("authToken");
-        if (!cookies.authToken && !token) {
-            console.log("No tokens found, redirecting to /login"); // Debug
-            navigate("/login");
-            return;
-        }
-
-        setShowSpinner(true);
-
-        try {
-            const headers = {
-                "Content-Type": "application/json",
-                Accept: "application/json",
-            };
-            if (token) {
-                headers["Authorization"] = `Bearer ${token}`;
-            }
-            const response = await axios.post(
-                `${import.meta.env.VITE_SERVER}/logout`,
-                {},
-                { headers, withCredentials: true }
-            );
-            console.log("Logout response:", response.data); // Debug
-            removeCookie("authToken", { path: "/", sameSite: "none", secure: true });
-            removeCookie("adminToken", { path: "/", sameSite: "none", secure: true });
-            localStorage.removeItem("authToken");
-            localStorage.setItem("isAdmin", "false");
-            setIsAdmin(false);
-            navigate("/login");
-        } catch (error) {
-            console.error("Logout failed:", error.message, error.response?.data); // Debug
-            removeCookie("authToken", { path: "/", sameSite: "none", secure: true });
-            removeCookie("adminToken", { path: "/", sameSite: "none", secure: true });
-            localStorage.removeItem("authToken");
-            localStorage.setItem("isAdmin", "false");
-            setIsAdmin(false);
-            navigate("/login");
-        } finally {
-            setShowSpinner(false);
-        }
-    };
-
-    return (
-        <nav className="navbar">
-            <h2>DarkShield</h2>
-            <ul>
-                <li>
-                    <Link to="/" className={active===1?"active":""} onClick={() => setActive(1)}>Home</Link>
+  return (
+    <nav className="navbar navbar-expand-lg navbar-light bg-light">
+      <div className="container-fluid">
+        <Link className="navbar-brand" to="/">
+          Phishing Detection
+        </Link>
+        <button
+          className="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+          aria-controls="navbarNav"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span className="navbar-toggler-icon"></span>
+        </button>
+        <div className="collapse navbar-collapse" id="navbarNav">
+          <ul className="navbar-nav ms-auto">
+            <li className="nav-item">
+              <Link
+                className={`nav-link ${active === 1 ? "active" : ""}`}
+                to="/"
+                onClick={() => setActive(1)}
+              >
+                Home
+              </Link>
+            </li>
+            <li className="nav-item">
+              <Link
+                className={`nav-link ${active === 2 ? "active" : ""}`}
+                to="/phishing"
+                onClick={() => setActive(2)}
+              >
+                Phishing
+              </Link>
+            </li>
+            {!isLoggedIn && (
+              <>
+                <li className="nav-item">
+                  <Link
+                    className={`nav-link ${active === 3 ? "active" : ""}`}
+                    to="/signup"
+                    onClick={() => setActive(3)}
+                  >
+                    Signup
+                  </Link>
                 </li>
-                <li>
-                    <Link to="/tools" className={active===2?"active":""} onClick={() => setActive(2)}>Tools</Link>
+                <li className="nav-item">
+                  <Link
+                    className={`nav-link ${active === 4 ? "active" : ""}`}
+                    to="/login"
+                    onClick={() => setActive(4)}
+                  >
+                    Login
+                  </Link>
                 </li>
-                <li>
-                    <Link to="/contact" className={active===3?"active":""} onClick={() => setActive(3)}>Contact</Link>
-                </li>
-                <li>
-                    <Link to="/about" className={active===4?"active":""} onClick={() => setActive(4)}>About</Link>
-                </li>
-                {isAdmin && (
-                    <li>
-                        <Link to="/admin" className={active===5?"active":""} onClick={() => setActive(5)}>Admin</Link>
-                    </li>
-                )}
-            </ul>
-            <button onClick={handleLogout}>
-                {showSpinner ? (
-                    <div className="spinner"></div>
-                ) : "Logout"}
-            </button>
-        </nav>
-    );
+              </>
+            )}
+            {isAdmin && (
+              <li className="nav-item">
+                <Link
+                  className={`nav-link ${active === 5 ? "active" : ""}`}
+                  to="/admin/urls"
+                  onClick={() => setActive(5)}
+                >
+                  URLs
+                </Link>
+              </li>
+            )}
+            {isLoggedIn && (
+              <li className="nav-item">
+                <button
+                  className="nav-link btn btn-link"
+                  onClick={handleLogout}
+                >
+                  Logout
+                </button>
+              </li>
+            )}
+          </ul>
+        </div>
+      </div>
+    </nav>
+  );
 };
 
 export default Navbar;
