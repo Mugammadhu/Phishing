@@ -1,10 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import "../styles/Login.css";
-import "bootstrap-icons/font/bootstrap-icons.css"; // Import Bootstrap Icons
+import "bootstrap-icons/font/bootstrap-icons.css";
 
 const Signup = () => {
   const [otp, setOtp] = useState("");
@@ -52,20 +52,27 @@ const Signup = () => {
             withCredentials: true,
           }
         );
-
+        console.log("Signup response:", response.data);
         setMessage({
           text: "Registration successful! Redirecting...",
           isError: false,
         });
-        setTimeout(() => navigate("/"), 1500);
-        console.log(response);
+        const timeoutId = setTimeout(() => {
+          console.log("Navigating to /");
+          navigate("/", { replace: true });
+        }, 1500);
+        return () => clearTimeout(timeoutId); // Cleanup timeout
       } catch (error) {
+        console.error("Signup error:", error.response?.data || error.message);
         if (error.response?.status === 409) {
           setMessage({
             text: "User already exists. Redirecting to login...",
             isError: true,
           });
-          setTimeout(() => navigate("/login"), 1500);
+          setTimeout(() => {
+            console.log("Navigating to /login");
+            navigate("/login", { replace: true });
+          }, 1500);
         } else {
           setMessage({
             text: error.response?.data?.error || "Registration failed",
@@ -90,13 +97,17 @@ const Signup = () => {
 
     setIsLoading(true);
     try {
-      const response = await axios.post(`${import.meta.env.VITE_SERVER}/send-otp`, {
-        email: formik.values.email,
-        name: formik.values.name,
-      });
+      const response = await axios.post(
+        `${import.meta.env.VITE_SERVER}/send-otp`,
+        {
+          email: formik.values.email,
+          name: formik.values.name,
+        }
+      );
       setSendOTP(true);
       setMessage({ text: response.data.message, isError: false });
     } catch (error) {
+      console.error("Send OTP error:", error.response?.data || error.message);
       setMessage({
         text: error.response?.data?.error || "Failed to send OTP",
         isError: true,
@@ -115,13 +126,17 @@ const Signup = () => {
 
     setIsLoading(true);
     try {
-      const response = await axios.post(`${import.meta.env.VITE_SERVER}/verify-otp`, {
-        email: formik.values.email,
-        otp,
-      });
+      const response = await axios.post(
+        `${import.meta.env.VITE_SERVER}/verify-otp`,
+        {
+          email: formik.values.email,
+          otp,
+        }
+      );
       setMessage({ text: response.data.message, isError: false });
       setIsVerified(true);
     } catch (error) {
+      console.error("Verify OTP error:", error.response?.data || error.message);
       setMessage({
         text: error.response?.data?.error || "OTP verification failed",
         isError: true,
@@ -130,6 +145,11 @@ const Signup = () => {
       setIsLoading(false);
     }
   };
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => clearTimeout();
+  }, []);
 
   return (
     <div className="login signup">
