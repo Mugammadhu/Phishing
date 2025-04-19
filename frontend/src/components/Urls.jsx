@@ -24,6 +24,13 @@ const Urls = () => {
         fetchUrls();
     }, []);
 
+    const showToast = (message, type) => {
+        setToast({ show: true, message, type });
+        setTimeout(() => {
+            setToast({ ...toast, show: false });
+        }, 3000);
+    };
+
     const fetchUrls = async () => {
         try {
             const response = await axios.get(`${import.meta.env.VITE_SERVER}/urls`, {
@@ -34,18 +41,10 @@ const Urls = () => {
                 withCredentials: true,
             });
             setUrls(response.data);
-            setToast({
-                show: true,
-                message: "URLs loaded successfully!",
-                type: "success",
-            });
+            showToast("URLs loaded successfully!", "success");
         } catch (error) {
             console.error("Error fetching URLs:", error.response?.data || error.message);
-            setToast({
-                show: true,
-                message: "Failed to fetch URLs",
-                type: "error",
-            });
+            showToast("Failed to fetch URLs", "error");
         } finally {
             setLoading(false);
         }
@@ -53,11 +52,7 @@ const Urls = () => {
 
     const copyToClipboard = (text) => {
         navigator.clipboard.writeText(text);
-        setToast({
-            show: true,
-            message: "URL copied to clipboard!",
-            type: "success",
-        });
+        showToast("URL copied to clipboard!", "success");
     };
 
     const exportToCSV = () => {
@@ -77,11 +72,7 @@ const Urls = () => {
         a.download = "urls.csv";
         a.click();
         window.URL.revokeObjectURL(url);
-        setToast({
-            show: true,
-            message: "URLs exported to CSV!",
-            type: "success",
-        });
+        showToast("URLs exported to CSV!", "success");
     };
 
     const filteredUrls = urls
@@ -128,18 +119,10 @@ const Urls = () => {
             });
             setUrls(urls.filter((url) => url._id !== urlToDelete._id));
             setShowDeleteModal(false);
-            setToast({
-                show: true,
-                message: "URL deleted successfully!",
-                type: "success",
-            });
+            showToast("URL deleted successfully!", "success");
         } catch (error) {
             console.error("Error deleting URL:", error.response?.data || error.message);
-            setToast({
-                show: true,
-                message: "Failed to delete URL",
-                type: "error",
-            });
+            showToast("Failed to delete URL", "error");
         }
     };
 
@@ -180,6 +163,7 @@ const Urls = () => {
                         initial={{ opacity: 0, y: -50 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -50 }}
+                        transition={{ duration: 0.3 }}
                         className={`position-fixed top-0 end-0 m-3 alert alert-${
                             toast.type === "success" ? "success" : "danger"
                         } d-flex align-items-center shadow`}
@@ -297,14 +281,7 @@ const Urls = () => {
                                                 URL
                                             </h6>
                                             <p className="mb-0 url-truncate" title={url.url}>
-                                                <a
-                                                    href={url.url}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    className="text-primary"
-                                                >
-                                                    {url.url}
-                                                </a>
+                                                {url.url}
                                             </p>
                                         </div>
                                         <div className="mb-3">
@@ -512,14 +489,7 @@ const Urls = () => {
                                             URL
                                         </h6>
                                         <p className="fs-5 word-wrap">
-                                            <a
-                                                href={selectedUrl.url}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                className="text-primary"
-                                            >
-                                                {selectedUrl.url}
-                                            </a>
+                                            {selectedUrl.url}
                                         </p>
                                     </div>
                                     <div className="col-md-6 mb-3">
@@ -580,7 +550,7 @@ const Urls = () => {
                                     Close
                                 </motion.button>
                                 <motion.button
-                                    className="btn btn-outline-primary"
+                                    className="btn btn-primary"
                                     onClick={() => copyToClipboard(selectedUrl.url)}
                                     whileHover={{ scale: 1.05 }}
                                     whileTap={{ scale: 0.95 }}
@@ -588,15 +558,6 @@ const Urls = () => {
                                     <i className="bi bi-clipboard me-1"></i>
                                     Copy URL
                                 </motion.button>
-                                <a
-                                    href={selectedUrl.url}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="btn btn-primary"
-                                >
-                                    <i className="bi bi-box-arrow-up-right me-1"></i>
-                                    Visit URL
-                                </a>
                             </div>
                         </div>
                     </motion.div>
